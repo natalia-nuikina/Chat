@@ -21,6 +21,7 @@ plugins:
 rules:
   import/extensions: 0
   import/no-unresolved: 0
+  import/no-extraneous-dependencies: 0
   react/prop-types: 0
   no-console: 0
   react/react-in-jsx-scope: 0
@@ -35,4 +36,5 @@ rules:
   no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }]
   react/function-component-definition: 0
   testing-library/no-debug: 0
+  jsx-a11y/label-has-associated-control: 0
   react/jsx-filename-extension: [1, { "extensions": [".js", ".jsx"] }]
