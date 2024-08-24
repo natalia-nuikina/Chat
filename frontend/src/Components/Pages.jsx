@@ -1,5 +1,10 @@
 import { loremIpsum } from 'lorem-ipsum';
-import { Formik, Form, Field } from 'formik';
+// import { Formik } from 'formik';
+// import {
+//   Form, Button, FloatingLabel, Card,
+// } from 'react-bootstrap';
+
+// import error from './img/Снимок экрана 2024-08-16 в 17.04.00.png';
 
 const BuildPage = (index) => (
   <>
@@ -17,36 +22,6 @@ const BuildPage = (index) => (
 );
 
 export const PageOne = () => BuildPage(1);
-export const PageLogin = () => (
-  <Formik
-    initialValues={{ name: '', password: '' }}
-    onSubmit={({ setSubmitting }) => {
-      console.log('Form is validated! Submitting the form...');
-      setSubmitting(false);
-    }}
-  >
-    <Form>
-      <div className="form-group">
-        <label htmlFor="name">Name</label>
-        <Field
-          type="name"
-          name="name"
-          id="name"
-          className="form-control"
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="password">Password</label>
-        <Field
-          type="password"
-          name="password"
-          className="form-control"
-        />
-      </div>
-      <button type="submit">Submit</button>
-    </Form>
-  </Formik>
-);
 export const Page404 = () => (
   <>
     <h1>
@@ -54,7 +29,7 @@ export const Page404 = () => (
     </h1>
     <h3>
       Такой страници нет на нашем сайте.
-      Возможно вы ввели не верный адресс или она была удалена. Попробуйте вернуться на главную.
+      Возможно вы ввели не верный адресс или она была удалена. Но вы можете вернуться на главную.
     </h3>
   </>
 );
