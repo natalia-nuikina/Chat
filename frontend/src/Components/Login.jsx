@@ -20,7 +20,6 @@ const PageLogin = () => {
       password: '',
     },
     onSubmit: async (values) => {
-      console.log(values);
       const response = await axios.post('/api/v1/login', values)
         .catch((err) => {
           console.log(err);
@@ -30,7 +29,6 @@ const PageLogin = () => {
         window.localStorage.setItem('userId', JSON.stringify(response.data));
         auth.logIn();
         setAuthFailed(false);
-        console.log(auth.loggedIn);
         if (location.state) {
           navigate(location.state.from);
         }

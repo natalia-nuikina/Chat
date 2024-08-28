@@ -4,10 +4,11 @@ import {
   BrowserRouter, Routes, Route, useLocation, Navigate,
 } from 'react-router-dom';
 import { useState, useMemo } from 'react';
-import { PageOne, Page404 } from './Components/Pages.jsx';
+import PageChat from './Components/Chat.jsx';
+import Page404 from './Components/Pages.jsx';
 import PageLogin from './Components/Login.jsx';
 import AuthContext from './contexts/index.jsx';
-import useAuth from './hooks/index.jsx';
+// import useAuth from './hooks/index.jsx';
 
 const AuthProvider = ({ children }) => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -28,33 +29,33 @@ const AuthProvider = ({ children }) => {
 };
 
 const PrivateRoute = ({ children }) => {
-  const auth = useAuth();
+  const token = localStorage.getItem('userId');
+  // const auth = useAuth();
   const location = useLocation();
+  // console.log(auth.loggedIn);
 
   return (
-    auth.loggedIn ? children : <Navigate to="/login" state={{ from: location }} />
+    (token) ? children : <Navigate to="/login" state={{ from: location }} />
   );
 };
 
-function App() {
-  return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/"
-            element={(
-              <PrivateRoute>
-                <PageOne />
-              </PrivateRoute>
-            )}
-          />
-          <Route path="/login" element={<PageLogin />} />
-          <Route path="*" element={<Page404 />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
-  );
-}
+const App = () => (
+  <AuthProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={(
+            <PrivateRoute>
+              <PageChat />
+            </PrivateRoute>
+          )}
+        />
+        <Route path="/login" element={<PageLogin />} />
+        <Route path="*" element={<Page404 />} />
+      </Routes>
+    </BrowserRouter>
+  </AuthProvider>
+);
 
 export default App;
