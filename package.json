@@ -21,5 +21,8 @@
   "homepage": "https://github.com/natalia-nuikina/frontend-project-12#readme",
   "devDependencies": {
     "@hexlet/chat-server": "^2.0.4"
+  },
+  "dependencies": {
+    "socket.io": "^4.7.5"
   }
 }

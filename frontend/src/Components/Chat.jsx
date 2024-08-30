@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { useEffect } from 'react';
-import { useSelector, connect, useDispatch } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { Button, InputGroup, Form } from 'react-bootstrap';
 import { addChannels } from '../slices/channelsSlice.js';
 import { addMessages, setCurrentText } from '../slices/messagesSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
+import socket from '../socket.js';
 
 const mapStateToProps = ({ channelsReducer, messagesReducer }) => {
   const props = {
@@ -24,6 +25,7 @@ const getAuthHeader = () => {
 };
 
 const PageChat = ({ messagesReducer, channelsReducer }) => {
+  console.log(`Компонент PageChat отрисован в ${new Date().toLocaleTimeString()}`);
   const userId = JSON.parse(localStorage.getItem('userId'));
   const { username } = userId;
   const dispatch = useDispatch();
@@ -39,9 +41,9 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   }, [dispatch]);
 
   const GetActiveChannel = () => {
-    const idActiveChannel = useSelector((state) => state.channelsReducer.idActiveChannel);
-    const [activeChannel] = useSelector((state) => state.channelsReducer.channels)
-      .filter((channel) => Number(channel.id) === Number(idActiveChannel));
+    const { channelId } = channelsReducer;
+    const { activeChannel } = channelsReducer.channels
+      .filter((channel) => Number(channel.id) === Number(channelId));
     return (
       (activeChannel) ? activeChannel.name : null
     );
@@ -51,13 +53,23 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     dispatch(setCurrentText(e.target.value));
   };
 
-  const sendMessage = (e) => {
+  const sendMessage = async (e) => {
     e.preventDefault();
-    const { idActiveChannel } = channelsReducer;
+    const { channelId } = channelsReducer;
+    console.log(typeof (channelId.toString()));
     const { currentText } = messagesReducer;
-    dispatch(addMessages({ message: currentText, username, idActiveChannel }));
+    await axios.post('/api/v1/messages', { body: currentText, channelId: channelId.toString(), username }, { headers: getAuthHeader() });
     dispatch(setCurrentText(''));
   };
+  socket.on('newMessage', (payload) => {
+    console.log(payload);
+    dispatch(addMessages(payload));
+  });
+
+  socket.on('newChannel', (payload) => {
+    console.log(payload); // { id: 6, name: "new channel", removable: true }
+    dispatch(addChannels(payload));
+  });
 
   return (
     <div className="container h-100% my-4 overflow-hidden rounded shadow">
@@ -73,7 +85,10 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
           <div className="d-flex flex-column">
             <div className="bg-light mb-4 p-3 shadow-sm small">
               <p className="m-0">
-                <b><GetActiveChannel /></b>
+                <b>
+                  {'# '}
+                  <GetActiveChannel />
+                </b>
               </p>
               <span className="text-muted">{`${messagesReducer.messages.length} сообщений`}</span>
             </div>

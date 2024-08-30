@@ -4,11 +4,13 @@ import { Button } from 'react-bootstrap';
 import { setActiveChannel } from '../slices/channelsSlice';
 
 const Channels = () => {
+  console.log(`Компонент Channels отрисован в ${new Date().toLocaleTimeString()}`);
+
   const dispatch = useDispatch();
   const setActive = (id) => () => {
     dispatch(setActiveChannel(id));
   };
-  const activeChannel = useSelector((state) => state.channelsReducer.idActiveChannel);
+  const activeChannel = useSelector((state) => state.channelsReducer.channelId);
   const setVariantButton = (id) => {
     if (activeChannel === Number(id)) {
       return 'secondary';

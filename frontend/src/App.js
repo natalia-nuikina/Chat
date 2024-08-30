@@ -8,6 +8,7 @@ import PageChat from './Components/Chat.jsx';
 import Page404 from './Components/Pages.jsx';
 import PageLogin from './Components/Login.jsx';
 import AuthContext from './contexts/index.jsx';
+// import socket from './socket.js';
 // import useAuth from './hooks/index.jsx';
 
 const AuthProvider = ({ children }) => {
@@ -39,23 +40,27 @@ const PrivateRoute = ({ children }) => {
   );
 };
 
-const App = () => (
-  <AuthProvider>
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={(
-            <PrivateRoute>
-              <PageChat />
-            </PrivateRoute>
-          )}
-        />
-        <Route path="/login" element={<PageLogin />} />
-        <Route path="*" element={<Page404 />} />
-      </Routes>
-    </BrowserRouter>
-  </AuthProvider>
-);
+const App = () => {
+  console.log(`Компонент App отрисован в ${new Date().toLocaleTimeString()}`);
+
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={(
+              <PrivateRoute>
+                <PageChat />
+              </PrivateRoute>
+            )}
+          />
+          <Route path="/login" element={<PageLogin />} />
+          <Route path="*" element={<Page404 />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+};
 
 export default App;

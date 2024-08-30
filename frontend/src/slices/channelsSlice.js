@@ -4,7 +4,7 @@ import unionBy from 'lodash/unionBy';
 
 const initialState = {
   channels: [],
-  idActiveChannel: 1,
+  channelId: 1,
 };
 
 const channelsSlice = createSlice({
@@ -15,7 +15,7 @@ const channelsSlice = createSlice({
       state.channels = unionBy(state.channels, action.payload, 'id');
     },
     setActiveChannel: (state, action) => {
-      state.idActiveChannel = action.payload;
+      state.channelId = action.payload;
     },
   },
 });
