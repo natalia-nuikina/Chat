@@ -4,8 +4,6 @@ import { Button } from 'react-bootstrap';
 import { setActiveChannel } from '../slices/channelsSlice';
 
 const Channels = () => {
-  console.log(`Компонент Channels отрисован в ${new Date().toLocaleTimeString()}`);
-
   const dispatch = useDispatch();
   const setActive = (id) => () => {
     dispatch(setActiveChannel(id));
@@ -26,7 +24,6 @@ const Channels = () => {
       </Button>
     </li>
   ));
-  console.log(channelsQ);
 
   return (
     <ul id="channelsBox" className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block">

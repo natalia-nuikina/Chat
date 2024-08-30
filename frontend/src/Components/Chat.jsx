@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { Button, InputGroup, Form } from 'react-bootstrap';
 import { addChannels } from '../slices/channelsSlice.js';
@@ -30,7 +30,18 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   const userId = JSON.parse(localStorage.getItem('userId'));
   const { username } = userId;
   const dispatch = useDispatch();
-
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  useEffect(() => {
+    const onConnect = () => {
+      setIsConnected(true);
+    };
+    const onDisconnect = () => {
+      setIsConnected(false);
+    };
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+  }, []);
+  console.log(isConnected);
   useEffect(() => {
     const fetchData = async () => {
       const startChannels = await axios.get('/api/v1/channels', { headers: getAuthHeader() })
@@ -48,19 +59,19 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
         dispatch(addMessages(startMessages.data));
       }
     };
-    fetchData();
-    socket.on('newMessage', (payload) => {
-      console.log(payload);
-      dispatch(addMessages(payload));
-    });
-    socket.on('newChannel', (payload) => {
-      console.log(payload); // { id: 6, name: "new channel", removable: true }
-      dispatch(addChannels(payload));
-    });
-  }, [dispatch]);
+    if (isConnected) {
+      fetchData();
+      socket.on('newMessage', (payload) => {
+        dispatch(addMessages(payload));
+      });
+      socket.on('newChannel', (payload) => {
+        dispatch(addChannels(payload));
+      });
+    }
+  }, [dispatch, isConnected]);
 
   // axios.delete(
-  //   '/api/v1/messages/84',
+  //   '/api/v1/messages/3',
   //   { headers: getAuthHeader() },
   // ).then((response) => {
   //   console.log(response.data); // => { id: '3' }
