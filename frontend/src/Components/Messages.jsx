@@ -10,13 +10,13 @@ const mapStateToProps = ({ channelsReducer, messagesReducer }) => {
 };
 
 const Messages = ({ channelsReducer, messagesReducer }) => {
-  console.log(`Компонент Messages отрисован в ${new Date().toLocaleTimeString()}`);
-  // const { username } = JSON.parse(localStorage.getItem('userId'));
   const { messages } = messagesReducer;
   const { channelId } = channelsReducer;
   if (!messages) {
     return null;
   }
+  console.log(messages);
+
   const messagesBox = messages
     .filter((message) => Number(message.channelId) === Number(channelId))
     .map(({ body, id, username }) => (
@@ -25,7 +25,6 @@ const Messages = ({ channelsReducer, messagesReducer }) => {
         {`: ${body}`}
       </div>
     ));
-  console.log(messagesBox);
   return (
     <div id="messagesBox" className="chat-messages overflow-auto px-5 ">
       <div className="text-break mb-2">

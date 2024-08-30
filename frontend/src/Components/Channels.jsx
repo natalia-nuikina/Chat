@@ -17,15 +17,16 @@ const Channels = () => {
     }
     return false;
   };
-  const channels = useSelector((state) => state.channelsReducer.channels)
-    .map((channel) => (
-      <li key={channel.id} className="nav-item w-100">
-        <Button type="button" onClick={setActive(Number(channel.id))} className="w-100 rounded-0 text-start btn" variant={setVariantButton(channel.id)}>
-          <span className="me-1">#</span>
-          {channel.name}
-        </Button>
-      </li>
-    ));
+  const channelsQ = useSelector((state) => state.channelsReducer.channels);
+  const channels = channelsQ.map((channel) => (
+    <li key={channel.id} className="nav-item w-100">
+      <Button type="button" onClick={setActive(Number(channel.id))} className="w-100 rounded-0 text-start btn" variant={setVariantButton(channel.id)}>
+        <span className="me-1">#</span>
+        {channel.name}
+      </Button>
+    </li>
+  ));
+  console.log(channelsQ);
 
   return (
     <ul id="channelsBox" className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block">

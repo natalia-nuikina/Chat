@@ -25,29 +25,54 @@ const getAuthHeader = () => {
 };
 
 const PageChat = ({ messagesReducer, channelsReducer }) => {
-  console.log(`Компонент PageChat отрисован в ${new Date().toLocaleTimeString()}`);
+  const { channelId, channels } = channelsReducer;
+  const { messages, currentText } = messagesReducer;
   const userId = JSON.parse(localStorage.getItem('userId'));
   const { username } = userId;
   const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchData = async () => {
-      const channels = await axios.get('/api/v1/channels', { headers: getAuthHeader() });
-      const messages = await axios.get('/api/v1/messages', { headers: getAuthHeader() });
-      dispatch(addChannels(channels.data));
-      dispatch(addMessages(messages.data));
+      const startChannels = await axios.get('/api/v1/channels', { headers: getAuthHeader() })
+        .catch((err) => {
+          console.log(err);
+        });
+      const startMessages = await axios.get('/api/v1/messages', { headers: getAuthHeader() })
+        .catch((err) => {
+          console.log(err);
+        });
+      if (startChannels) {
+        dispatch(addChannels(startChannels.data));
+      }
+      if (startMessages) {
+        dispatch(addMessages(startMessages.data));
+      }
     };
     fetchData();
+    socket.on('newMessage', (payload) => {
+      console.log(payload);
+      dispatch(addMessages(payload));
+    });
+    socket.on('newChannel', (payload) => {
+      console.log(payload); // { id: 6, name: "new channel", removable: true }
+      dispatch(addChannels(payload));
+    });
   }, [dispatch]);
 
+  // axios.delete(
+  //   '/api/v1/messages/84',
+  //   { headers: getAuthHeader() },
+  // ).then((response) => {
+  //   console.log(response.data); // => { id: '3' }
+  // });
   const GetActiveChannel = () => {
-    const { channelId } = channelsReducer;
-    const { activeChannel } = channelsReducer.channels
-      .filter((channel) => Number(channel.id) === Number(channelId));
+    const [activeChannel] = channels.filter((channel) => Number(channel.id) === Number(channelId));
     return (
       (activeChannel) ? activeChannel.name : null
     );
   };
+  const getAmountMessages = () => messages
+    .filter((message) => Number(message.channelId) === Number(channelId)).length;
 
   const newTextMessage = (e) => {
     dispatch(setCurrentText(e.target.value));
@@ -55,21 +80,12 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    const { channelId } = channelsReducer;
-    console.log(typeof (channelId.toString()));
-    const { currentText } = messagesReducer;
-    await axios.post('/api/v1/messages', { body: currentText, channelId: channelId.toString(), username }, { headers: getAuthHeader() });
+    await axios.post('/api/v1/messages', { body: currentText, channelId: channelId.toString(), username }, { headers: getAuthHeader() })
+      .catch((err) => {
+        console.log(err);
+      });
     dispatch(setCurrentText(''));
   };
-  socket.on('newMessage', (payload) => {
-    console.log(payload);
-    dispatch(addMessages(payload));
-  });
-
-  socket.on('newChannel', (payload) => {
-    console.log(payload); // { id: 6, name: "new channel", removable: true }
-    dispatch(addChannels(payload));
-  });
 
   return (
     <div className="container h-100% my-4 overflow-hidden rounded shadow">
@@ -90,7 +106,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
                   <GetActiveChannel />
                 </b>
               </p>
-              <span className="text-muted">{`${messagesReducer.messages.length} сообщений`}</span>
+              <span className="text-muted">{`${getAmountMessages()} сообщений`}</span>
             </div>
             <Messages />
             <div className="mt-auto px-5 py-3">
