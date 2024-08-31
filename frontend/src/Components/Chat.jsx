@@ -5,13 +5,14 @@ import {
   Button, InputGroup, Form,
 } from 'react-bootstrap';
 
-import { addChannels } from '../slices/channelsSlice.js';
-import { addMessages, setCurrentText } from '../slices/messagesSlice.js';
+import { addChannels, removeChannel } from '../slices/channelsSlice.js';
+import { addMessages, setCurrentText, removeMessages } from '../slices/messagesSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
 import socket from '../socket.js';
 import ModalAdd from './ModalAdd.jsx';
 import getAuthHeader from './helpers.js';
+import ModalRemove from './ModalRemove.jsx';
 
 const mapStateToProps = ({ channelsReducer, messagesReducer }) => {
   const props = {
@@ -65,6 +66,10 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
       socket.on('newChannel', (payload) => {
         dispatch(addChannels(payload));
       });
+      socket.on('removeChannel', (payload) => {
+        dispatch(removeChannel(payload));
+        dispatch(removeMessages(payload));
+      });
     }
   }, [dispatch, isConnected]);
 
@@ -94,9 +99,18 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     window.location.href = '/';
   };
 
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const [showAdd, setShowAdd] = useState(false);
+  const handleCloseAdd = () => setShowAdd(false);
+  const handleShowAdd = () => setShowAdd(true);
+
+  const [showRemove, setShowRemove] = useState(false);
+  const [removeChannelId, setRemoveChanelId] = useState('');
+
+  const handleCloseRemove = () => setShowRemove(false);
+  const handleShowRemove = (e) => {
+    setRemoveChanelId(e.target.id);
+    setShowRemove(true);
+  };
 
   useEffect(() => {
     ref.current.focus();
@@ -118,9 +132,9 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
                 <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
                   <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
                     <b className="p-2">Каналы</b>
-                    <Button type="button" variant="outline-primary" onClick={handleShow}>+</Button>
+                    <Button type="button" variant="outline-primary" onClick={handleShowAdd}>+</Button>
                   </div>
-                  <Channels />
+                  <Channels props={{ handleShowRemove }} />
                 </div>
                 <div className="col p-0 h-100">
                   <div className="d-flex flex-column h-100">
@@ -149,7 +163,8 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
           </div>
         </div>
       </div>
-      <ModalAdd props={{ show, handleClose }} />
+      <ModalAdd props={{ showAdd, handleCloseAdd }} />
+      <ModalRemove props={{ showRemove, handleCloseRemove, removeChannelId }} />
     </>
   );
 };

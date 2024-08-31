@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import getAuthHeader from './helpers';
 
 const ModalAdd = ({ props }) => {
-  const { show, handleClose } = props;
+  const { showAdd, handleCloseAdd } = props;
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
 
@@ -26,12 +26,12 @@ const ModalAdd = ({ props }) => {
           console.log(err);
         });
       resetForm();
-      handleClose();
+      handleCloseAdd();
     },
   });
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal show={showAdd} onHide={handleCloseAdd} centered>
       <Modal.Header closeButton>
         <Modal.Title>Добавить канал</Modal.Title>
       </Modal.Header>
@@ -53,7 +53,7 @@ const ModalAdd = ({ props }) => {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" type="reset" onClick={handleClose}>
+          <Button variant="secondary" type="reset" onClick={handleCloseAdd}>
             Отменить
           </Button>
           <Button variant="primary" type="submit">

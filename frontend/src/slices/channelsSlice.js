@@ -17,17 +17,20 @@ const channelsSlice = createSlice({
         state.channels = [...state.channels, action.payload];
         state.channelId = Number(action.payload.id);
       }
-      console.log(state.channels);
     },
     setActiveChannel: (state, action) => {
       state.channelId = action.payload;
     },
+    removeChannel: (state, action) => {
+      const { id } = action.payload;
+      state.channels = state.channels.filter((channel) => channel.id !== id);
+      if (state.channelId === Number(id)) {
+        state.channelId = 1;
+      }
+    },
   },
 });
 
-// Слайс генерирует действия, которые экспортируются отдельно
-// Действия генерируются автоматически из имен ключей редьюсеров
-export const { addChannels, setActiveChannel } = channelsSlice.actions;
+export const { addChannels, setActiveChannel, removeChannel } = channelsSlice.actions;
 
-// По умолчанию экспортируется редьюсер, сгенерированный слайсом
 export default channelsSlice.reducer;

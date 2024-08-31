@@ -5,11 +5,16 @@ import {
 } from 'react-bootstrap';
 import { setActiveChannel } from '../slices/channelsSlice';
 
-const Channels = () => {
+const Channels = ({ props }) => {
+  const { handleShowRemove } = props;
   const dispatch = useDispatch();
   const setActive = (id) => () => {
     dispatch(setActiveChannel(id));
   };
+  // const handleShowRemoveQ = () => {
+  //   console.log(handleShowRemove);
+  //   handleShowRemove();
+  // };
   const activeChannel = useSelector((state) => state.channelsReducer.channelId);
   const setVariantButton = (id) => {
     if (activeChannel === Number(id)) {
@@ -41,7 +46,7 @@ const Channels = () => {
               {channel.name}
             </Button>
             <DropdownButton as={ButtonGroup} variant={setVariantButton(channel.id)} title="">
-              <Dropdown.Item eventKey="1">Удалить</Dropdown.Item>
+              <Dropdown.Item id={channel.id} eventKey="1" onClick={handleShowRemove}>Удалить</Dropdown.Item>
               <Dropdown.Item eventKey="2">Переименовать</Dropdown.Item>
             </DropdownButton>
           </ButtonGroup>

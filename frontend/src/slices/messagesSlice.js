@@ -13,7 +13,6 @@ const messagesSlice = createSlice({
     addMessages: (state, action) => {
       if (action.payload.length) {
         state.messages = [...state.messages, ...action.payload];
-        console.log(action.payload);
       } else {
         state.messages = [...state.messages, action.payload];
       }
@@ -21,12 +20,14 @@ const messagesSlice = createSlice({
     setCurrentText: (state, action) => {
       state.currentText = action.payload;
     },
+    removeMessages: (state, action) => {
+      const { id } = action.payload;
+      state.messages = state.messages
+        .filter((message) => Number(message.channelId) === Number(id));
+    },
   },
 });
 
-// Слайс генерирует действия, которые экспортируются отдельно
-// Действия генерируются автоматически из имен ключей редьюсеров
-export const { addMessages, setCurrentText } = messagesSlice.actions;
+export const { addMessages, setCurrentText, removeMessages } = messagesSlice.actions;
 
-// По умолчанию экспортируется редьюсер, сгенерированный слайсом
 export default messagesSlice.reducer;
