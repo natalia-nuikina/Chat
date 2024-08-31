@@ -11,12 +11,10 @@ const mapStateToProps = ({ channelsReducer, messagesReducer }) => {
 
 const Messages = ({ channelsReducer, messagesReducer }) => {
   const { messages } = messagesReducer;
-  console.log(messages);
   const { channelId } = channelsReducer;
   if (!messages) {
     return null;
   }
-  console.log(messages);
 
   const messagesBox = messages
     .filter((message) => Number(message.channelId) === Number(channelId))

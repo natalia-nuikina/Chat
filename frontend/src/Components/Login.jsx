@@ -12,7 +12,6 @@ const PageLogin = () => {
   const [authFailed, setAuthFailed] = useState(false);
   const location = useLocation();
   const auth = useAuth();
-  console.log('new login');
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {

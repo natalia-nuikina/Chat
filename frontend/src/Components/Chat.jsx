@@ -1,18 +1,15 @@
 import axios from 'axios';
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import {
-  Button, InputGroup, Form,
-} from 'react-bootstrap';
+import { Button, InputGroup, Form } from 'react-bootstrap';
+import getModal from './Modals/index.js';
 
-import { addChannels, removeChannel } from '../slices/channelsSlice.js';
+import { addChannels, removeChannel, renameChannel } from '../slices/channelsSlice.js';
 import { addMessages, setCurrentText, removeMessages } from '../slices/messagesSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
 import socket from '../socket.js';
-import ModalAdd from './ModalAdd.jsx';
 import getAuthHeader from './helpers.js';
-import ModalRemove from './ModalRemove.jsx';
 
 const mapStateToProps = ({ channelsReducer, messagesReducer }) => {
   const props = {
@@ -22,7 +19,26 @@ const mapStateToProps = ({ channelsReducer, messagesReducer }) => {
   return props;
 };
 
+const renderModal = ({
+  modalInfo, hideModal, connectState, setConnectState,
+}) => {
+  if (!modalInfo.type) {
+    return null;
+  }
+
+  const Component = getModal(modalInfo.type);
+  return (
+    <Component
+      modalInfo={modalInfo}
+      onHide={hideModal}
+      connectState={connectState}
+      setConnectState={setConnectState}
+    />
+  );
+};
+
 const PageChat = ({ messagesReducer, channelsReducer }) => {
+  const [connectState, setConnectState] = useState(false);
   const ref = useRef(null);
   const { channelId, channels } = channelsReducer;
   const { messages, currentText } = messagesReducer;
@@ -43,6 +59,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setConnectState(true);
       const startChannels = await axios.get('/api/v1/channels', { headers: getAuthHeader() })
         .catch((err) => {
           console.log(err);
@@ -51,6 +68,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
         .catch((err) => {
           console.log(err);
         });
+      setConnectState(false);
       if (startChannels) {
         dispatch(addChannels(startChannels.data));
       }
@@ -70,6 +88,9 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
         dispatch(removeChannel(payload));
         dispatch(removeMessages(payload));
       });
+      socket.on('renameChannel', (payload) => {
+        dispatch(renameChannel(payload));
+      });
     }
   }, [dispatch, isConnected]);
 
@@ -88,10 +109,12 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
+    setConnectState(true);
     await axios.post('/api/v1/messages', { body: currentText, channelId: channelId.toString(), username }, { headers: getAuthHeader() })
       .catch((err) => {
         console.log(err);
       });
+    setConnectState(false);
     dispatch(setCurrentText(''));
   };
   const logOut = () => {
@@ -99,22 +122,13 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     window.location.href = '/';
   };
 
-  const [showAdd, setShowAdd] = useState(false);
-  const handleCloseAdd = () => setShowAdd(false);
-  const handleShowAdd = () => setShowAdd(true);
-
-  const [showRemove, setShowRemove] = useState(false);
-  const [removeChannelId, setRemoveChanelId] = useState('');
-
-  const handleCloseRemove = () => setShowRemove(false);
-  const handleShowRemove = (e) => {
-    setRemoveChanelId(e.target.id);
-    setShowRemove(true);
-  };
-
   useEffect(() => {
     ref.current.focus();
   }, [currentText, channelId]);
+
+  const [modalInfo, setModalInfo] = useState({ type: null, item: null });
+  const hideModal = () => setModalInfo({ type: null, item: null });
+  const showModal = (type, item = null) => setModalInfo({ type, item });
 
   return (
     <>
@@ -124,7 +138,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
             <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
               <div className="container">
                 <a className="navbar-brand" href="/">Hexlet Chat</a>
-                <Button onClick={logOut}>Выйти</Button>
+                <Button disabled={connectState} onClick={logOut}>Выйти</Button>
               </div>
             </nav>
             <div className="container my-4 overflow-hidden rounded shadow" style={{ height: '85vh' }}>
@@ -132,9 +146,9 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
                 <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
                   <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
                     <b className="p-2">Каналы</b>
-                    <Button type="button" variant="outline-primary" onClick={handleShowAdd}>+</Button>
+                    <Button disabled={connectState} type="button" variant="outline-primary" onClick={() => showModal('adding')}>+</Button>
                   </div>
-                  <Channels props={{ handleShowRemove }} />
+                  <Channels props={{ showModal }} />
                 </div>
                 <div className="col p-0 h-100">
                   <div className="d-flex flex-column h-100">
@@ -152,7 +166,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
                       <Form onSubmit={sendMessage} className="py-1 border rounded-2">
                         <InputGroup>
                           <Form.Control ref={ref} name="body" aria-label="Новое сообщение" placeholder="Введите сообщение..." value={messagesReducer.currentText} onChange={newTextMessage} className="border-0 p-0 ps-2" />
-                          <Button type="submit" variant="outline-primary" className="mt-8">Отправить</Button>
+                          <Button disabled={connectState} type="submit" variant="outline-primary" className="mt-8">Отправить</Button>
                         </InputGroup>
                       </Form>
                     </div>
@@ -163,8 +177,9 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
           </div>
         </div>
       </div>
-      <ModalAdd props={{ showAdd, handleCloseAdd }} />
-      <ModalRemove props={{ showRemove, handleCloseRemove, removeChannelId }} />
+      {renderModal({
+        modalInfo, hideModal, connectState, setConnectState,
+      })}
     </>
   );
 };

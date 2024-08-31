@@ -6,15 +6,11 @@ import {
 import { setActiveChannel } from '../slices/channelsSlice';
 
 const Channels = ({ props }) => {
-  const { handleShowRemove } = props;
+  const { showModal } = props;
   const dispatch = useDispatch();
   const setActive = (id) => () => {
     dispatch(setActiveChannel(id));
   };
-  // const handleShowRemoveQ = () => {
-  //   console.log(handleShowRemove);
-  //   handleShowRemove();
-  // };
   const activeChannel = useSelector((state) => state.channelsReducer.channelId);
   const setVariantButton = (id) => {
     if (activeChannel === Number(id)) {
@@ -23,7 +19,6 @@ const Channels = ({ props }) => {
     return null;
   };
   const channelsQ = useSelector((state) => state.channelsReducer.channels);
-  console.log(channelsQ);
   if (channelsQ) {
     const channels = channelsQ.map((channel) => {
       if (!channel.removable) {
@@ -46,8 +41,8 @@ const Channels = ({ props }) => {
               {channel.name}
             </Button>
             <DropdownButton as={ButtonGroup} variant={setVariantButton(channel.id)} title="">
-              <Dropdown.Item id={channel.id} eventKey="1" onClick={handleShowRemove}>Удалить</Dropdown.Item>
-              <Dropdown.Item eventKey="2">Переименовать</Dropdown.Item>
+              <Dropdown.Item id={channel.id} eventKey="1" onClick={() => showModal('removing', channel)}>Удалить</Dropdown.Item>
+              <Dropdown.Item id={channel.id} name={channel.name} eventKey="2" onClick={() => showModal('renaming', channel)}>Переименовать</Dropdown.Item>
             </DropdownButton>
           </ButtonGroup>
         </li>

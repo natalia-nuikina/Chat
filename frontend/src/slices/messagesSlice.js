@@ -23,7 +23,7 @@ const messagesSlice = createSlice({
     removeMessages: (state, action) => {
       const { id } = action.payload;
       state.messages = state.messages
-        .filter((message) => Number(message.channelId) === Number(id));
+        .filter((message) => Number(message.channelId) !== Number(id));
     },
   },
 });
