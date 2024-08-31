@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-// import uniqueId from 'lodash/uniqueId';
 
 const initialState = {
   messages: [],
@@ -12,10 +11,9 @@ const messagesSlice = createSlice({
   initialState,
   reducers: {
     addMessages: (state, action) => {
-      // const newMess = action.payload;
-      console.log((action.payload));
       if (action.payload.length) {
         state.messages = [...state.messages, ...action.payload];
+        console.log(action.payload);
       } else {
         state.messages = [...state.messages, action.payload];
       }

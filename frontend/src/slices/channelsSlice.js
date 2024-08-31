@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import unionBy from 'lodash/unionBy';
 
 const initialState = {
   channels: [],
@@ -12,7 +11,13 @@ const channelsSlice = createSlice({
   initialState,
   reducers: {
     addChannels: (state, action) => {
-      state.channels = unionBy(state.channels, action.payload, 'id');
+      if (state.channels.length === 0) {
+        state.channels = action.payload;
+      } else {
+        state.channels = [...state.channels, action.payload];
+        state.channelId = Number(action.payload.id);
+      }
+      console.log(state.channels);
     },
     setActiveChannel: (state, action) => {
       state.channelId = action.payload;
