@@ -7,15 +7,21 @@ import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { getAuthHeader } from '../helpers';
 
-const generateOnSubmit = ({
-  modalInfo, onHide, setConnectState,
-}) => async (values, { resetForm }) => {
+const generateOnSubmit = (props, n, tt) => async (values, { resetForm }) => {
+  const { modalInfo, onHide, setConnectState } = props;
   const { id } = modalInfo.item;
+  console.log(modalInfo);
   setConnectState(true);
-  await axios.patch(`/api/v1/channels/${id}`, values, { headers: getAuthHeader() })
+  const response = await axios.patch(`/api/v1/channels/${id}`, values, { headers: getAuthHeader() })
     .catch((err) => {
-      console.log(err);
+      if (err.code === 'ERR_NETWORK') {
+        n(`${tt('toasts.error')}`, true, true)();
+      }
     });
+  if (response && modalInfo) {
+    n(`${tt('toasts.rename')}`, true)();
+  }
+
   setConnectState(false);
   resetForm();
   onHide();
@@ -23,7 +29,9 @@ const generateOnSubmit = ({
 
 const Rename = (props) => {
   const { t } = useTranslation();
-  const { onHide, modalInfo, connectState } = props;
+  const {
+    onHide, modalInfo, connectState, notify,
+  } = props;
   const { item } = modalInfo;
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
@@ -39,7 +47,7 @@ const Rename = (props) => {
       name: yup.string().required(`${t('errors.validation.required')}`).min(3, `${t('errors.validation.range')}`).max(20, `${t('errors.validation.range')}`)
         .notOneOf(channelsNames, `${t('errors.validation.unique')}`),
     }),
-    onSubmit: generateOnSubmit(props),
+    onSubmit: generateOnSubmit(props, notify, t),
   });
   return (
     <Modal show centered>

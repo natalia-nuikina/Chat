@@ -5,14 +5,25 @@ import { getAuthHeader } from '../helpers';
 
 const Remove = (props) => {
   const { t } = useTranslation();
-  const { onHide, connectState, setConnectState } = props;
+  const {
+    onHide, connectState, setConnectState, notify,
+  } = props;
   const removeChannel = ({ modalInfo }) => async () => {
     const { id } = modalInfo.item;
     setConnectState(true);
-    await axios.delete(`/api/v1/channels/${id}`, { headers: getAuthHeader() });
+    const response = await axios.delete(`/api/v1/channels/${id}`, { headers: getAuthHeader() })
+      .catch((err) => {
+        if (err.code === 'ERR_NETWORK') {
+          notify(`${t('toasts.error')}`, true, true)();
+        }
+      });
+    if (response) {
+      notify(`${t('toasts.remove')}`, true)();
+    }
     setConnectState(false);
     onHide();
   };
+
   return (
     <Modal show centered>
       <Modal.Header closeButton onHide={onHide} disabled={connectState}>

@@ -3,7 +3,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { Button, InputGroup, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
+import { ToastContainer, toast } from 'react-toastify';
 import getModal from './Modals/index.js';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { addChannels, removeChannel, renameChannel } from '../slices/channelsSlice.js';
 import { addMessages, setCurrentText, removeMessages } from '../slices/messagesSlice.js';
@@ -21,7 +23,7 @@ const mapStateToProps = ({ channelsReducer, messagesReducer }) => {
 };
 
 const renderModal = ({
-  modalInfo, hideModal, connectState, setConnectState,
+  modalInfo, hideModal, connectState, setConnectState, notify,
 }) => {
   if (!modalInfo.type) {
     return null;
@@ -34,6 +36,7 @@ const renderModal = ({
       onHide={hideModal}
       connectState={connectState}
       setConnectState={setConnectState}
+      notify={notify}
     />
   );
 };
@@ -48,6 +51,13 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   const { username } = userId;
   const dispatch = useDispatch();
   const [isConnected, setIsConnected] = useState(socket.connected);
+  const notify = (message, move, error = false) => () => {
+    if (move) {
+      return ((error) ? toast.error(message) : toast.success(message));
+    }
+    return null;
+  };
+
   useEffect(() => {
     const onConnect = () => {
       setIsConnected(true);
@@ -65,10 +75,12 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
       const startChannels = await axios.get('/api/v1/channels', { headers: getAuthHeader() })
         .catch((err) => {
           console.log(err);
+          notify(`${t('toasts.error')}`, true, true);
         });
       const startMessages = await axios.get('/api/v1/messages', { headers: getAuthHeader() })
         .catch((err) => {
           console.log(err);
+          notify(`${t('toasts.error')}`, true, true);
         });
       setConnectState(false);
       if (startChannels) {
@@ -94,7 +106,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
         dispatch(renameChannel(payload));
       });
     }
-  }, [dispatch, isConnected]);
+  }, [dispatch, isConnected, t]);
 
   const GetActiveChannel = () => {
     const [activeChannel] = channels.filter((channel) => Number(channel.id) === Number(channelId));
@@ -115,6 +127,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     await axios.post('/api/v1/messages', { body: currentText, channelId: channelId.toString(), username }, { headers: getAuthHeader() })
       .catch((err) => {
         console.log(err);
+        notify(`${t('toasts.error')}`, true, true)();
       });
     setConnectState(false);
     dispatch(setCurrentText(''));
@@ -160,10 +173,25 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
                   </div>
                   <Messages />
                   <div className="mt-auto px-5 py-3">
-                    <Form onSubmit={sendMessage} className="py-1 border rounded-2">
+                    <Form onSubmit={sendMessage}>
                       <InputGroup>
-                        <Form.Control ref={ref} name="body" aria-label="Новое сообщение" placeholder={t('chat.write')} value={messagesReducer.currentText} onChange={newTextMessage} className="border-0 p-0 ps-2" />
-                        <Button disabled={connectState} type="submit" variant="outline-primary" className="mt-8">{t('chat.send')}</Button>
+                        <Form.Control
+                          ref={ref}
+                          name="body"
+                          aria-label="Новое сообщение"
+                          placeholder={t('chat.write')}
+                          value={messagesReducer.currentText}
+                          onChange={newTextMessage}
+                          aria-describedby="basic-addon2"
+                        />
+                        <Button
+                          disabled={messagesReducer.currentText.length === 0}
+                          type="submit"
+                          variant="outline-primary"
+                          id="button-addon2"
+                        >
+                          {t('chat.send')}
+                        </Button>
                       </InputGroup>
                     </Form>
                   </div>
@@ -172,9 +200,10 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
             </div>
           </div>
         </div>
+        <ToastContainer />
       </div>
       {renderModal({
-        modalInfo, hideModal, connectState, setConnectState,
+        modalInfo, hideModal, connectState, setConnectState, notify,
       })}
     </>
   );

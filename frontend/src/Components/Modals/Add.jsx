@@ -11,7 +11,9 @@ import { getAuthHeader } from '../helpers';
 
 const Add = (props) => {
   const { t } = useTranslation();
-  const { onHide, connectState, setConnectState } = props;
+  const {
+    modalInfo, onHide, connectState, setConnectState, notify,
+  } = props;
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
 
@@ -30,16 +32,21 @@ const Add = (props) => {
     }),
     onSubmit: async (values, { resetForm }) => {
       setConnectState(true);
-      await axios.post('/api/v1/channels', values, { headers: getAuthHeader() })
+      const response = await axios.post('/api/v1/channels', values, { headers: getAuthHeader() })
         .catch((err) => {
-          console.log(err);
+          if (err.code === 'ERR_NETWORK') {
+            notify(`${t('toasts.error')}`, true, true)();
+          }
         });
+      if (response && modalInfo) {
+        notify(`${t('toasts.add')}`, true)();
+      }
       setConnectState(false);
       resetForm();
       onHide();
     },
   });
-
+  console.log(connectState);
   return (
     <Modal show centered>
       <Modal.Header closeButton onHide={onHide} disabled={connectState}>

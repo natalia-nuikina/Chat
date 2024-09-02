@@ -6,12 +6,15 @@ import { useNavigate } from 'react-router-dom';
 import {
   Form, Button, FloatingLabel, Card,
 } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 import useAuth from '../hooks/index.jsx';
 import logo from './img/young-woman-waving-hand-talking-bubbles-vector.jpg';
 
 const SignUp = () => {
   const { t } = useTranslation();
+  const notify = () => toast.error(`${t('toasts.networkErr')}`);
   const [connectState, setConnectState] = useState(false);
   const auth = useAuth();
   const navigate = useNavigate();
@@ -30,10 +33,14 @@ const SignUp = () => {
       const { username, password } = values;
       setConnectState(true);
       const response = await axios.post('/api/v1/signup', { username, password })
-        .catch(() => {
-          formik.errors.username = ' ';
-          formik.errors.password = ' ';
-          formik.errors.confirmPassword = `${t('errors.wasFound')}`;
+        .catch((err) => {
+          if (err.status === 409) {
+            formik.errors.username = ' ';
+            formik.errors.password = ' ';
+            formik.errors.confirmPassword = `${t('errors.wasFound')}`;
+          } else {
+            notify();
+          }
         });
       setConnectState(false);
       if (response) {
@@ -120,6 +127,7 @@ const SignUp = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };
