@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState, useRef } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { Button, InputGroup, Form } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import getModal from './Modals/index.js';
 
 import { addChannels, removeChannel, renameChannel } from '../slices/channelsSlice.js';
@@ -38,6 +39,7 @@ const renderModal = ({
 };
 
 const PageChat = ({ messagesReducer, channelsReducer }) => {
+  const { t } = useTranslation();
   const [connectState, setConnectState] = useState(false);
   const ref = useRef(null);
   const { channelId, channels } = channelsReducer;
@@ -132,16 +134,16 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
         <div className="d-flex flex-column h-100">
           <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
             <div className="container">
-              <a className="navbar-brand" href="/">Hexlet Chat</a>
-              <Button disabled={connectState} onClick={logOut}>Выйти</Button>
+              <a className="navbar-brand" href="/">{t('logo')}</a>
+              <Button disabled={connectState} onClick={logOut}>{t('chat.logOut')}</Button>
             </div>
           </nav>
           <div className="container my-4 overflow-hidden rounded shadow" style={{ height: '85vh' }}>
             <div className="row h-100 bg-white flex-md-row">
               <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
                 <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
-                  <b className="p-2">Каналы</b>
-                  <Button disabled={connectState} type="button" variant="outline-primary" onClick={() => showModal('adding')}>+</Button>
+                  <b className="p-2">{t('chat.channels')}</b>
+                  <Button disabled={connectState} type="button" variant="outline-primary" onClick={() => showModal('adding')}>{t('chat.add')}</Button>
                 </div>
                 <Channels props={{ showModal }} />
               </div>
@@ -150,18 +152,18 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
                   <div className="bg-light mb-4 p-3 shadow-sm small">
                     <p className="m-0">
                       <b>
-                        {'# '}
+                        <span className="me-1">{t('chat.labelChannel')}</span>
                         <GetActiveChannel />
                       </b>
                     </p>
-                    <span className="text-muted">{`${getAmountMessages()} сообщений`}</span>
+                    <span className="text-muted">{t('chat.messages.key', { count: getAmountMessages() })}</span>
                   </div>
                   <Messages />
                   <div className="mt-auto px-5 py-3">
                     <Form onSubmit={sendMessage} className="py-1 border rounded-2">
                       <InputGroup>
-                        <Form.Control ref={ref} name="body" aria-label="Новое сообщение" placeholder="Введите сообщение..." value={messagesReducer.currentText} onChange={newTextMessage} className="border-0 p-0 ps-2" />
-                        <Button disabled={connectState} type="submit" variant="outline-primary" className="mt-8">Отправить</Button>
+                        <Form.Control ref={ref} name="body" aria-label="Новое сообщение" placeholder={t('chat.write')} value={messagesReducer.currentText} onChange={newTextMessage} className="border-0 p-0 ps-2" />
+                        <Button disabled={connectState} type="submit" variant="outline-primary" className="mt-8">{t('chat.send')}</Button>
                       </InputGroup>
                     </Form>
                   </div>

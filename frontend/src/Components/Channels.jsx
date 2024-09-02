@@ -3,9 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, ButtonGroup, DropdownButton, Dropdown,
 } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import { setActiveChannel } from '../slices/channelsSlice';
 
 const Channels = ({ props }) => {
+  const { t } = useTranslation();
   const { showModal } = props;
   const dispatch = useDispatch();
   const setActive = (id) => () => {
@@ -26,7 +28,7 @@ const Channels = ({ props }) => {
           <li key={channel.id} className="nav-item w-100">
             <ButtonGroup className="d-flex">
               <Button type="button" onClick={setActive(Number(channel.id))} className="w-100 rounded-0 text-start btn text-truncate" variant={setVariantButton(channel.id)}>
-                <span className="me-1">#</span>
+                <span className="me-1">{t('chat.labelChannel')}</span>
                 {channel.name}
               </Button>
             </ButtonGroup>
@@ -37,12 +39,12 @@ const Channels = ({ props }) => {
         <li key={channel.id} className="nav-item w-100">
           <ButtonGroup className="d-flex show dropdown">
             <Button type="button" onClick={setActive(Number(channel.id))} className="w-100 rounded-0 text-start btn text-truncate" variant={setVariantButton(channel.id)}>
-              <span className="me-1">#</span>
+              <span className="me-1">{t('chat.labelChannel')}</span>
               {channel.name}
             </Button>
             <DropdownButton as={ButtonGroup} variant={setVariantButton(channel.id)} title="">
-              <Dropdown.Item id={channel.id} eventKey="1" onClick={() => showModal('removing', channel)}>Удалить</Dropdown.Item>
-              <Dropdown.Item id={channel.id} name={channel.name} eventKey="2" onClick={() => showModal('renaming', channel)}>Переименовать</Dropdown.Item>
+              <Dropdown.Item id={channel.id} eventKey="1" onClick={() => showModal('removing', channel)}>{t('chat.delete')}</Dropdown.Item>
+              <Dropdown.Item id={channel.id} name={channel.name} eventKey="2" onClick={() => showModal('renaming', channel)}>{t('chat.rename')}</Dropdown.Item>
             </DropdownButton>
           </ButtonGroup>
         </li>

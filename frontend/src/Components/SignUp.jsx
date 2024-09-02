@@ -6,10 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import {
   Form, Button, FloatingLabel, Card,
 } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import useAuth from '../hooks/index.jsx';
 import logo from './img/young-woman-waving-hand-talking-bubbles-vector.jpg';
 
 const SignUp = () => {
+  const { t } = useTranslation();
   const [connectState, setConnectState] = useState(false);
   const auth = useAuth();
   const navigate = useNavigate();
@@ -20,9 +22,9 @@ const SignUp = () => {
       confirmPassword: '',
     },
     validationSchema: yup.object({
-      username: yup.string().required('Обязательное поле').min(3, 'От 3 до 20 символов').max(20, 'От 3 до 20 символов'),
-      password: yup.string().required('Обязательное поле').min(6, 'Не менее 6 символов'),
-      confirmPassword: yup.string().required().oneOf([yup.ref('password'), null], 'Пароли должны совпадать'),
+      username: yup.string().required(`${t('errors.validation.required')}`).min(3, `${t('errors.validation.range')}`).max(20, `${t('errors.validation.range')}`),
+      password: yup.string().required(`${t('errors.validation.required')}`).min(6, `${t('errors.validation.minRange')}`),
+      confirmPassword: yup.string().required().oneOf([yup.ref('password'), null], `${t('errors.validation.confirmPassword')}`),
     }),
     onSubmit: async (values) => {
       const { username, password } = values;
@@ -31,7 +33,7 @@ const SignUp = () => {
         .catch(() => {
           formik.errors.username = ' ';
           formik.errors.password = ' ';
-          formik.errors.confirmPassword = 'Такой пользователь уже существует';
+          formik.errors.confirmPassword = `${t('errors.wasFound')}`;
         });
       setConnectState(false);
       if (response) {
@@ -46,7 +48,7 @@ const SignUp = () => {
       <div className="d-flex flex-column h-100">
         <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
           <div className="container">
-            <a className="navbar-brand" href="/">Hexlet Chat</a>
+            <a className="navbar-brand" href="/">{t('logo')}</a>
           </div>
         </nav>
         <div className="container-fluid h-100">
@@ -58,9 +60,9 @@ const SignUp = () => {
                     <Card.Img className="img-fluid align-self-center col-12 col-md-8" style={{ maxHeight: '30vh', maxWidth: '28vh' }} src={logo} alt="Войти" />
                   </div>
                   <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-md-0">
-                    <h1 className="text-center mb-4">Регистрация</h1>
+                    <h1 className="text-center mb-4">{t('signUpForm.heading')}</h1>
                     <Form.Group>
-                      <FloatingLabel controlId="username" label="Имя пользователя" className="mb-3">
+                      <FloatingLabel controlId="username" label={t('signUpForm.username')} className="mb-3">
                         <Form.Control
                           isInvalid={formik.touched.username && formik.errors.username}
                           onChange={formik.handleChange}
@@ -76,7 +78,7 @@ const SignUp = () => {
                       </FloatingLabel>
                     </Form.Group>
                     <Form.Group>
-                      <FloatingLabel className="mb-4" controlId="password" label="Пароль">
+                      <FloatingLabel className="mb-4" controlId="password" label={t('signUpForm.password')}>
                         <Form.Control
                           isInvalid={formik.touched.password && formik.errors.password}
                           onChange={formik.handleChange}
@@ -92,7 +94,7 @@ const SignUp = () => {
                       </FloatingLabel>
                     </Form.Group>
                     <Form.Group>
-                      <FloatingLabel className="mb-4" controlId="confirmPassword" label="Подтвердите пароль">
+                      <FloatingLabel className="mb-4" controlId="confirmPassword" label={t('signUpForm.confirmPassword')}>
                         <Form.Control
                           isInvalid={
                             formik.touched.confirmPassword
@@ -110,7 +112,7 @@ const SignUp = () => {
                         <Form.Control.Feedback tooltip type="invalid">{formik.errors.confirmPassword}</Form.Control.Feedback>
                       </FloatingLabel>
                     </Form.Group>
-                    <Button disabled={connectState} className="w-100 mb-3" variant="outline-primary" type="submit">Зарегистрироваться</Button>
+                    <Button disabled={connectState} className="w-100 mb-3" variant="outline-primary" type="submit">{t('signUpForm.signupBtn')}</Button>
                   </Form>
                 </Card.Body>
               </Card>

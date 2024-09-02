@@ -3,8 +3,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import './index.css';
+import './i18next.js';
 import App from './App';
-// import reportWebVitals from './reportWebVitals';
 import store from './slices/index.js';
 
 const root = ReactDOM.createRoot(document.querySelector('div.h-100'));

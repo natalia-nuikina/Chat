@@ -1,13 +1,17 @@
-const Page404 = () => (
-  <>
-    <h1>
-      404 page not found
-    </h1>
-    <h3>
-      Такой страници нет на нашем сайте.
-      Возможно вы ввели не верный адресс или она была удалена. Но вы можете вернуться на главную.
-    </h3>
-  </>
-);
+import { useTranslation } from 'react-i18next';
+
+const Page404 = () => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <h1>
+        {t('404.error')}
+      </h1>
+      <h3>
+        {t('404.message')}
+      </h3>
+    </>
+  );
+};
 
 export default Page404;

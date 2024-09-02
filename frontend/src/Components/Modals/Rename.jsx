@@ -4,6 +4,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Button, Modal, Form } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { getAuthHeader } from '../helpers';
 
 const generateOnSubmit = ({
@@ -21,6 +22,7 @@ const generateOnSubmit = ({
 };
 
 const Rename = (props) => {
+  const { t } = useTranslation();
   const { onHide, modalInfo, connectState } = props;
   const { item } = modalInfo;
   const { channels } = useSelector((state) => state.channelsReducer);
@@ -34,15 +36,15 @@ const Rename = (props) => {
       name: item.name,
     },
     validationSchema: yup.object({
-      name: yup.string().required().min(3, 'Too Short!').max(20, 'Too Long!')
-        .notOneOf(channelsNames, 'not one off'),
+      name: yup.string().required(`${t('errors.validation.required')}`).min(3, `${t('errors.validation.range')}`).max(20, `${t('errors.validation.range')}`)
+        .notOneOf(channelsNames, `${t('errors.validation.unique')}`),
     }),
     onSubmit: generateOnSubmit(props),
   });
   return (
     <Modal show centered>
       <Modal.Header closeButton onHide={onHide} disabled={connectState}>
-        <Modal.Title>Переименовать канал</Modal.Title>
+        <Modal.Title>{t('modals.renameChannel')}</Modal.Title>
       </Modal.Header>
       <form onSubmit={formik.handleSubmit}>
         <Modal.Body>
@@ -56,7 +58,7 @@ const Rename = (props) => {
               name="name"
               isInvalid={formik.touched.name && formik.errors.name}
             />
-            <Form.Label className="visually-hidden">Имя канала</Form.Label>
+            <Form.Label className="visually-hidden">{t('modals.chanelName')}</Form.Label>
             <Form.Control.Feedback type="invalid">
               {formik.errors.name}
             </Form.Control.Feedback>
@@ -64,10 +66,10 @@ const Rename = (props) => {
         </Modal.Body>
         <Modal.Footer>
           <Button disabled={connectState} variant="secondary" type="reset" onClick={onHide}>
-            Отменить
+            {t('modals.cansel')}
           </Button>
           <Button disabled={connectState} variant="primary" type="submit">
-            Отправить
+            {t('modals.send')}
           </Button>
         </Modal.Footer>
       </form>

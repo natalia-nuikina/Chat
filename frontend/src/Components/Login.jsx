@@ -5,10 +5,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Form, Button, FloatingLabel, Card,
 } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import useAuth from '../hooks/index.jsx';
 import logo from './img/poster_event_1336266.jpg';
 
 const PageLogin = () => {
+  const { t } = useTranslation();
   const [connectState, setConnectState] = useState(false);
   const [authFailed, setAuthFailed] = useState(false);
   const location = useLocation();
@@ -43,7 +45,7 @@ const PageLogin = () => {
       <div className="d-flex flex-column h-100">
         <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
           <div className="container">
-            <a className="navbar-brand" href="/">Hexlet Chat</a>
+            <a className="navbar-brand" href="/">{t('logo')}</a>
           </div>
         </nav>
         <div className="container-fluid h-100">
@@ -55,25 +57,25 @@ const PageLogin = () => {
                     <Card.Img className="img-fluid align-self-center col-12 col-md-8" style={{ maxHeight: '30vh', maxWidth: '50vh' }} src={logo} alt="Войти" />
                   </div>
                   <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-md-0">
-                    <h1 className="text-center mb-4">Войти</h1>
+                    <h1 className="text-center mb-4">{t('loginForm.login')}</h1>
                     <Form.Group>
-                      <FloatingLabel controlId="username" label="Ваш ник" className="mb-3">
+                      <FloatingLabel controlId="username" label={t('loginForm.username')} className="mb-3">
                         <Form.Control isInvalid={authFailed} onChange={formik.handleChange} value={formik.values.username} autoComplete="username" placeholder="Ваш ник" type="username" name="username" required autoFocus />
                       </FloatingLabel>
                     </Form.Group>
                     <Form.Group>
-                      <FloatingLabel className="mb-4" controlId="password" label="Пароль">
+                      <FloatingLabel className="mb-4" controlId="password" label={t('loginForm.password')}>
                         <Form.Control isInvalid={authFailed} onChange={formik.handleChange} value={formik.values.password} autoComplete="current-password" placeholder="Пароль" type="password" name="password" required />
-                        <Form.Control.Feedback tooltip type="invalid"><small>Неверные имя пользователя или пароль</small></Form.Control.Feedback>
+                        <Form.Control.Feedback tooltip type="invalid"><small>{t('errors.validation.notFound')}</small></Form.Control.Feedback>
                       </FloatingLabel>
                     </Form.Group>
-                    <Button disabled={connectState} className="w-100 mb-3" variant="outline-primary" type="submit">Войти</Button>
+                    <Button disabled={connectState} className="w-100 mb-3" variant="outline-primary" type="submit">{t('loginForm.login')}</Button>
                   </Form>
                 </Card.Body>
                 <Card.Footer className="p-4">
                   <div className="text-center">
-                    <span>Нет аккаунта? </span>
-                    <a href="/signup">Регестрация</a>
+                    <span>{t('loginForm.futter')}</span>
+                    <a href="/signup">{t('loginForm.signUp')}</a>
                   </div>
                 </Card.Footer>
               </Card>
