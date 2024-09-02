@@ -5,6 +5,7 @@ import axios from 'axios';
 import {
   Button, Form, Modal,
 } from 'react-bootstrap';
+import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getAuthHeader } from '../helpers';
@@ -32,7 +33,8 @@ const Add = (props) => {
     }),
     onSubmit: async (values, { resetForm }) => {
       setConnectState(true);
-      const response = await axios.post('/api/v1/channels', values, { headers: getAuthHeader() })
+      const filtedData = { name: filter.clean(values.name) };
+      const response = await axios.post('/api/v1/channels', filtedData, { headers: getAuthHeader() })
         .catch((err) => {
           if (err.code === 'ERR_NETWORK') {
             notify(`${t('toasts.error')}`, true, true)();

@@ -4,6 +4,7 @@ import { connect, useDispatch } from 'react-redux';
 import { Button, InputGroup, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { ToastContainer, toast } from 'react-toastify';
+import filter from 'leo-profanity';
 import getModal from './Modals/index.js';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -124,7 +125,8 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   const sendMessage = async (e) => {
     e.preventDefault();
     setConnectState(true);
-    await axios.post('/api/v1/messages', { body: currentText, channelId: channelId.toString(), username }, { headers: getAuthHeader() })
+    const filtedMessage = filter.clean(currentText);
+    await axios.post('/api/v1/messages', { body: filtedMessage, channelId: channelId.toString(), username }, { headers: getAuthHeader() })
       .catch((err) => {
         console.log(err);
         notify(`${t('toasts.error')}`, true, true)();
