@@ -2,11 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import {
-  Button, Modal, Form,
-} from 'react-bootstrap';
+import { Button, Modal, Form } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import getAuthHeader from '../helpers';
+import { getAuthHeader } from '../helpers';
 
 const generateOnSubmit = ({
   modalInfo, onHide, setConnectState,

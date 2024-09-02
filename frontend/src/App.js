@@ -8,6 +8,7 @@ import PageChat from './Components/Chat.jsx';
 import Page404 from './Components/Pages.jsx';
 import PageLogin from './Components/Login.jsx';
 import AuthContext from './contexts/index.jsx';
+import SignUp from './Components/SignUp.jsx';
 // import socket from './socket.js';
 // import useAuth from './hooks/index.jsx';
 
@@ -57,6 +58,7 @@ const App = () => {
           />
           <Route path="/login" element={<PageLogin />} />
           <Route path="*" element={<Page404 />} />
+          <Route path="/signup" element={<SignUp />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

@@ -1,4 +1,4 @@
-const getAuthHeader = () => {
+export const getAuthHeader = () => {
   const userId = JSON.parse(localStorage.getItem('userId'));
   if (userId && userId.token) {
     return { Authorization: `Bearer ${userId.token}` };
@@ -6,4 +6,7 @@ const getAuthHeader = () => {
   return {};
 };
 
-export default getAuthHeader;
+export const logOut = () => {
+  localStorage.removeItem('userId');
+  window.location.href = '/';
+};

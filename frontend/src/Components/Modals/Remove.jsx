@@ -1,8 +1,6 @@
 import axios from 'axios';
-import {
-  Button, Modal,
-} from 'react-bootstrap';
-import getAuthHeader from '../helpers';
+import { Button, Modal } from 'react-bootstrap';
+import { getAuthHeader } from '../helpers';
 
 const Remove = (props) => {
   const { onHide, connectState, setConnectState } = props;

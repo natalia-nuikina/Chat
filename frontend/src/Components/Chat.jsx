@@ -9,7 +9,7 @@ import { addMessages, setCurrentText, removeMessages } from '../slices/messagesS
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
 import socket from '../socket.js';
-import getAuthHeader from './helpers.js';
+import { getAuthHeader, logOut } from './helpers.js';
 
 const mapStateToProps = ({ channelsReducer, messagesReducer }) => {
   const props = {
@@ -117,10 +117,6 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     setConnectState(false);
     dispatch(setCurrentText(''));
   };
-  const logOut = () => {
-    localStorage.removeItem('userId');
-    window.location.href = '/';
-  };
 
   useEffect(() => {
     ref.current.focus();
@@ -132,44 +128,42 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
 
   return (
     <>
-      <div className="h-100">
-        <div className="h-100" id="chat">
-          <div className="d-flex flex-column h-100">
-            <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
-              <div className="container">
-                <a className="navbar-brand" href="/">Hexlet Chat</a>
-                <Button disabled={connectState} onClick={logOut}>Выйти</Button>
-              </div>
-            </nav>
-            <div className="container my-4 overflow-hidden rounded shadow" style={{ height: '85vh' }}>
-              <div className="row h-100 bg-white flex-md-row">
-                <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
-                  <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
-                    <b className="p-2">Каналы</b>
-                    <Button disabled={connectState} type="button" variant="outline-primary" onClick={() => showModal('adding')}>+</Button>
-                  </div>
-                  <Channels props={{ showModal }} />
+      <div className="h-100" id="chat">
+        <div className="d-flex flex-column h-100">
+          <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
+            <div className="container">
+              <a className="navbar-brand" href="/">Hexlet Chat</a>
+              <Button disabled={connectState} onClick={logOut}>Выйти</Button>
+            </div>
+          </nav>
+          <div className="container my-4 overflow-hidden rounded shadow" style={{ height: '85vh' }}>
+            <div className="row h-100 bg-white flex-md-row">
+              <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
+                <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
+                  <b className="p-2">Каналы</b>
+                  <Button disabled={connectState} type="button" variant="outline-primary" onClick={() => showModal('adding')}>+</Button>
                 </div>
-                <div className="col p-0 h-100">
-                  <div className="d-flex flex-column h-100">
-                    <div className="bg-light mb-4 p-3 shadow-sm small">
-                      <p className="m-0">
-                        <b>
-                          {'# '}
-                          <GetActiveChannel />
-                        </b>
-                      </p>
-                      <span className="text-muted">{`${getAmountMessages()} сообщений`}</span>
-                    </div>
-                    <Messages />
-                    <div className="mt-auto px-5 py-3">
-                      <Form onSubmit={sendMessage} className="py-1 border rounded-2">
-                        <InputGroup>
-                          <Form.Control ref={ref} name="body" aria-label="Новое сообщение" placeholder="Введите сообщение..." value={messagesReducer.currentText} onChange={newTextMessage} className="border-0 p-0 ps-2" />
-                          <Button disabled={connectState} type="submit" variant="outline-primary" className="mt-8">Отправить</Button>
-                        </InputGroup>
-                      </Form>
-                    </div>
+                <Channels props={{ showModal }} />
+              </div>
+              <div className="col p-0 h-100">
+                <div className="d-flex flex-column h-100">
+                  <div className="bg-light mb-4 p-3 shadow-sm small">
+                    <p className="m-0">
+                      <b>
+                        {'# '}
+                        <GetActiveChannel />
+                      </b>
+                    </p>
+                    <span className="text-muted">{`${getAmountMessages()} сообщений`}</span>
+                  </div>
+                  <Messages />
+                  <div className="mt-auto px-5 py-3">
+                    <Form onSubmit={sendMessage} className="py-1 border rounded-2">
+                      <InputGroup>
+                        <Form.Control ref={ref} name="body" aria-label="Новое сообщение" placeholder="Введите сообщение..." value={messagesReducer.currentText} onChange={newTextMessage} className="border-0 p-0 ps-2" />
+                        <Button disabled={connectState} type="submit" variant="outline-primary" className="mt-8">Отправить</Button>
+                      </InputGroup>
+                    </Form>
                   </div>
                 </div>
               </div>
@@ -185,3 +179,6 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
 };
 
 export default connect(mapStateToProps)(PageChat);
+
+// TODO scroll autofocus bottom
+// На странице логина и регестрации, если токен существует сделать редерект в чат

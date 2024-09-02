@@ -6,7 +6,7 @@ import {
   Button, Form, Modal,
 } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import getAuthHeader from '../helpers';
+import { getAuthHeader } from '../helpers';
 
 const Add = (props) => {
   const { onHide, connectState, setConnectState } = props;
