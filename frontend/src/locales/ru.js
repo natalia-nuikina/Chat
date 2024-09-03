@@ -44,6 +44,7 @@ export default {
         labelChannel: '#',
         delete: 'Удалить',
         rename: 'Переименовать',
+        change: 'Управление каналом',
       },
       modals: {
         add: 'Добавить канал',

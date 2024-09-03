@@ -55,7 +55,7 @@ const Channels = ({ props }) => {
               <span className="me-1">{t('chat.labelChannel')}</span>
               {channel.name}
             </Button>
-            <DropdownButton as={ButtonGroup} variant={setVariantButton(channel.id)} title="">
+            <DropdownButton as={ButtonGroup} variant={setVariantButton(channel.id)} title={<span className="visually-hidden">{t('chat.change')}</span>}>
               <Dropdown.Item
                 id={channel.id}
                 eventKey="1"
