@@ -7,13 +7,15 @@ import { useSelector } from 'react-redux';
 import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
 import { getAuthHeader } from '../helpers';
+import routes from '../../routes.js';
 
 const generateOnSubmit = (props, n, tt) => async (values, { resetForm }) => {
   const { modalInfo, onHide, setConnectState } = props;
   const { id } = modalInfo.item;
   setConnectState(true);
   const filtedData = { name: filter.clean(values.name) };
-  const response = await axios.patch(`/api/v1/channels/${id}`, filtedData, { headers: getAuthHeader() })
+  const response = await axios
+    .patch(routes.channelPath(id), filtedData, { headers: getAuthHeader() })
     .catch((err) => {
       if (err.code === 'ERR_NETWORK') {
         n(`${tt('toasts.error')}`, true, true)();

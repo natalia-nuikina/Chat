@@ -13,6 +13,7 @@ import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
 import socket from '../socket.js';
 import { getAuthHeader, logOut, mapStateToProps } from './helpers.js';
+import routes from '../routes.js';
 
 const renderModal = ({
   modalInfo, hideModal, connectState, setConnectState, notify,
@@ -64,11 +65,11 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   useEffect(() => {
     const fetchData = async () => {
       setConnectState(true);
-      const startChannels = await axios.get('/api/v1/channels', { headers: getAuthHeader() })
+      const startChannels = await axios.get(routes.channelsPath(), { headers: getAuthHeader() })
         .catch(() => {
           notify(`${t('toasts.error')}`, true, true);
         });
-      const startMessages = await axios.get('/api/v1/messages', { headers: getAuthHeader() })
+      const startMessages = await axios.get(routes.messagesPath(), { headers: getAuthHeader() })
         .catch(() => {
           notify(`${t('toasts.error')}`, true, true);
         });
@@ -115,7 +116,11 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     e.preventDefault();
     setConnectState(true);
     const filtedMessage = filter.clean(currentText);
-    await axios.post('/api/v1/messages', { body: filtedMessage, channelId: channelId.toString(), username }, { headers: getAuthHeader() })
+    await axios.post(routes.messagesPath(), {
+      body: filtedMessage,
+      channelId: channelId.toString(),
+      username,
+    }, { headers: getAuthHeader() })
       .catch(() => {
         notify(`${t('toasts.error')}`, true, true)();
       });

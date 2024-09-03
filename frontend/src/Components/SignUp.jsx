@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 import useAuth from '../hooks/index.jsx';
 import logo from './img/young-woman-waving-hand-talking-bubbles-vector.jpg';
+import routes from '../routes.js';
 
 const SignUp = () => {
   const { t } = useTranslation();
@@ -40,7 +41,7 @@ const SignUp = () => {
     onSubmit: async (values) => {
       const { username, password } = values;
       setConnectState(true);
-      const response = await axios.post('/api/v1/signup', { username, password })
+      const response = await axios.post(routes.signupPath(), { username, password })
         .catch((err) => {
           if (err.status === 409) {
             formik.errors.username = ' ';

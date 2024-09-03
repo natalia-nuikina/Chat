@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 import useAuth from '../hooks/index.jsx';
 import logo from './img/poster_event_1336266.jpg';
+import routes from '../routes.js';
 
 const PageLogin = () => {
   const { t } = useTranslation();
@@ -27,7 +28,7 @@ const PageLogin = () => {
     },
     onSubmit: async (values) => {
       setConnectState(true);
-      const response = await axios.post('/api/v1/login', values)
+      const response = await axios.post(routes.loginPath(), values)
         .catch((err) => {
           if (err.status === 401) {
             setAuthFailed(true);

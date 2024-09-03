@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Button, Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { getAuthHeader } from '../helpers';
+import routes from '../../routes.js';
 
 const Remove = (props) => {
   const { t } = useTranslation();
@@ -11,7 +12,7 @@ const Remove = (props) => {
   const removeChannel = ({ modalInfo }) => async () => {
     const { id } = modalInfo.item;
     setConnectState(true);
-    const response = await axios.delete(`/api/v1/channels/${id}`, { headers: getAuthHeader() })
+    const response = await axios.delete(routes.channelPath(id), { headers: getAuthHeader() })
       .catch((err) => {
         if (err.code === 'ERR_NETWORK') {
           notify(`${t('toasts.error')}`, true, true)();
