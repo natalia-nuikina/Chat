@@ -19,6 +19,7 @@ const PageLogin = () => {
   const auth = useAuth();
   const navigate = useNavigate();
   const notify = () => toast.error(`${t('toasts.networkErr')}`);
+
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -28,7 +29,6 @@ const PageLogin = () => {
       setConnectState(true);
       const response = await axios.post('/api/v1/login', values)
         .catch((err) => {
-          console.log(err);
           if (err.status === 401) {
             setAuthFailed(true);
           } else {
@@ -61,22 +61,59 @@ const PageLogin = () => {
               <Card className="shadow-sm">
                 <Card.Body className="row p-5">
                   <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
-                    <Card.Img className="img-fluid align-self-center col-12 col-md-8" style={{ maxHeight: '30vh', maxWidth: '50vh' }} src={logo} alt="Войти" />
+                    <Card.Img
+                      className="img-fluid align-self-center col-12 col-md-8"
+                      style={{ maxHeight: '30vh', maxWidth: '50vh' }}
+                      src={logo}
+                      alt="Войти"
+                    />
                   </div>
                   <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-md-0">
                     <h1 className="text-center mb-4">{t('loginForm.login')}</h1>
                     <Form.Group>
-                      <FloatingLabel controlId="username" label={t('loginForm.username')} className="mb-3">
-                        <Form.Control isInvalid={authFailed} onChange={formik.handleChange} value={formik.values.username} autoComplete="username" placeholder="Ваш ник" type="username" name="username" required autoFocus />
+                      <FloatingLabel
+                        controlId="username"
+                        label={t('loginForm.username')}
+                        className="mb-3"
+                      >
+                        <Form.Control
+                          isInvalid={authFailed}
+                          onChange={formik.handleChange}
+                          value={formik.values.username}
+                          autoComplete="username"
+                          placeholder={t('loginForm.username')}
+                          type="username"
+                          name="username"
+                          required
+                          autoFocus
+                        />
                       </FloatingLabel>
                     </Form.Group>
                     <Form.Group>
                       <FloatingLabel className="mb-4" controlId="password" label={t('loginForm.password')}>
-                        <Form.Control isInvalid={authFailed} onChange={formik.handleChange} value={formik.values.password} autoComplete="current-password" placeholder="Пароль" type="password" name="password" required />
-                        <Form.Control.Feedback tooltip type="invalid"><small>{t('errors.validation.notFound')}</small></Form.Control.Feedback>
+                        <Form.Control
+                          isInvalid={authFailed}
+                          onChange={formik.handleChange}
+                          value={formik.values.password}
+                          autoComplete="current-password"
+                          placeholder={t('loginForm.password')}
+                          type="password"
+                          name="password"
+                          required
+                        />
+                        <Form.Control.Feedback tooltip type="invalid">
+                          <small>{t('errors.validation.notFound')}</small>
+                        </Form.Control.Feedback>
                       </FloatingLabel>
                     </Form.Group>
-                    <Button disabled={connectState} className="w-100 mb-3" variant="outline-primary" type="submit">{t('loginForm.login')}</Button>
+                    <Button
+                      disabled={connectState}
+                      className="w-100 mb-3"
+                      variant="outline-primary"
+                      type="submit"
+                    >
+                      {t('loginForm.login')}
+                    </Button>
                   </Form>
                 </Card.Body>
                 <Card.Footer className="p-4">

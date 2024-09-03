@@ -5,11 +5,11 @@ import resources from './locales/ru.js';
 i18next
   .use(initReactI18next)
   .init({
-    resources, // передаем переводы текстов интерфейса в формате JSON
-    fallbackLng: 'ru', // если переводы на языке пользователя недоступны, то будет использоваться язык, указанный в этом поле
+    resources,
+    fallbackLng: 'ru',
     debug: false,
     interpolation: {
-      escapeValue: false, // экранирование уже есть в React, поэтому отключаем
+      escapeValue: false,
     },
   });
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, ButtonGroup, DropdownButton, Dropdown,
@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { setActiveChannel } from '../slices/channelsSlice';
 
 const Channels = ({ props }) => {
-  const channelsEndRef = useRef(null);
   const { t } = useTranslation();
   const { showModal } = props;
   const dispatch = useDispatch();
@@ -20,21 +19,22 @@ const Channels = ({ props }) => {
     document.getElementById(activeChannel)?.scrollIntoView();
   }, [activeChannel]);
 
-  const setVariantButton = (id) => {
-    if (activeChannel === Number(id)) {
-      return 'secondary';
-    }
-    return null;
-  };
+  const setVariantButton = (id) => ((activeChannel === Number(id)) ? 'secondary' : null);
+  const channels = useSelector((state) => state.channelsReducer.channels);
 
-  const channelsQ = useSelector((state) => state.channelsReducer.channels);
-  if (channelsQ) {
-    const channels = channelsQ.map((channel) => {
+  if (channels) {
+    const channelsBox = channels.map((channel) => {
       if (!channel.removable) {
         return (
           <li key={channel.id} className="nav-item w-100">
             <ButtonGroup className="d-flex">
-              <Button id={channel.id} type="button" onClick={setActive(Number(channel.id))} className="w-100 rounded-0 text-start btn text-truncate" variant={setVariantButton(channel.id)}>
+              <Button
+                id={channel.id}
+                type="button"
+                onClick={setActive(Number(channel.id))}
+                className="w-100 rounded-0 text-start btn text-truncate"
+                variant={setVariantButton(channel.id)}
+              >
                 <span className="me-1">{t('chat.labelChannel')}</span>
                 {channel.name}
               </Button>
@@ -45,13 +45,32 @@ const Channels = ({ props }) => {
       return (
         <li key={channel.id} className="nav-item w-100">
           <ButtonGroup className="d-flex show dropdown">
-            <Button id={channel.id} ref={channelsEndRef} type="button" onClick={setActive(Number(channel.id))} className="w-100 rounded-0 text-start btn text-truncate" variant={setVariantButton(channel.id)}>
+            <Button
+              id={channel.id}
+              type="button"
+              onClick={setActive(Number(channel.id))}
+              className="w-100 rounded-0 text-start btn text-truncate"
+              variant={setVariantButton(channel.id)}
+            >
               <span className="me-1">{t('chat.labelChannel')}</span>
               {channel.name}
             </Button>
             <DropdownButton as={ButtonGroup} variant={setVariantButton(channel.id)} title="">
-              <Dropdown.Item id={channel.id} eventKey="1" onClick={() => showModal('removing', channel)}>{t('chat.delete')}</Dropdown.Item>
-              <Dropdown.Item id={channel.id} name={channel.name} eventKey="2" onClick={() => showModal('renaming', channel)}>{t('chat.rename')}</Dropdown.Item>
+              <Dropdown.Item
+                id={channel.id}
+                eventKey="1"
+                onClick={() => showModal('removing', channel)}
+              >
+                {t('chat.delete')}
+              </Dropdown.Item>
+              <Dropdown.Item
+                id={channel.id}
+                name={channel.name}
+                eventKey="2"
+                onClick={() => showModal('renaming', channel)}
+              >
+                {t('chat.rename')}
+              </Dropdown.Item>
             </DropdownButton>
           </ButtonGroup>
         </li>
@@ -59,7 +78,7 @@ const Channels = ({ props }) => {
     });
     return (
       <ul id="channelsBox" className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block">
-        {channels}
+        {channelsBox}
       </ul>
     );
   }

@@ -18,6 +18,7 @@ const SignUp = () => {
   const [connectState, setConnectState] = useState(false);
   const auth = useAuth();
   const navigate = useNavigate();
+
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -25,9 +26,16 @@ const SignUp = () => {
       confirmPassword: '',
     },
     validationSchema: yup.object({
-      username: yup.string().required(`${t('errors.validation.required')}`).min(3, `${t('errors.validation.range')}`).max(20, `${t('errors.validation.range')}`),
-      password: yup.string().required(`${t('errors.validation.required')}`).min(6, `${t('errors.validation.minRange')}`),
-      confirmPassword: yup.string().required().oneOf([yup.ref('password'), null], `${t('errors.validation.confirmPassword')}`),
+      username: yup.string()
+        .required(`${t('errors.validation.required')}`)
+        .min(3, `${t('errors.validation.range')}`)
+        .max(20, `${t('errors.validation.range')}`),
+      password: yup.string()
+        .required(`${t('errors.validation.required')}`)
+        .min(6, `${t('errors.validation.minRange')}`),
+      confirmPassword: yup.string()
+        .required()
+        .oneOf([yup.ref('password'), null], `${t('errors.validation.confirmPassword')}`),
     }),
     onSubmit: async (values) => {
       const { username, password } = values;
@@ -64,7 +72,12 @@ const SignUp = () => {
               <Card className="shadow-sm">
                 <Card.Body className="row p-5">
                   <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
-                    <Card.Img className="img-fluid align-self-center col-12 col-md-8" style={{ maxHeight: '30vh', maxWidth: '28vh' }} src={logo} alt="Войти" />
+                    <Card.Img
+                      className="img-fluid align-self-center col-12 col-md-8"
+                      style={{ maxHeight: '30vh', maxWidth: '28vh' }}
+                      src={logo}
+                      alt="Войти"
+                    />
                   </div>
                   <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-md-0">
                     <h1 className="text-center mb-4">{t('signUpForm.heading')}</h1>
@@ -116,10 +129,19 @@ const SignUp = () => {
                           type="password"
                           required
                         />
-                        <Form.Control.Feedback tooltip type="invalid">{formik.errors.confirmPassword}</Form.Control.Feedback>
+                        <Form.Control.Feedback tooltip type="invalid">
+                          {formik.errors.confirmPassword}
+                        </Form.Control.Feedback>
                       </FloatingLabel>
                     </Form.Group>
-                    <Button disabled={connectState} className="w-100 mb-3" variant="outline-primary" type="submit">{t('signUpForm.signupBtn')}</Button>
+                    <Button
+                      disabled={connectState}
+                      className="w-100 mb-3"
+                      variant="outline-primary"
+                      type="submit"
+                    >
+                      {t('signUpForm.signupBtn')}
+                    </Button>
                   </Form>
                 </Card.Body>
               </Card>

@@ -7,21 +7,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import filter from 'leo-profanity';
 import getModal from './Modals/index.js';
 import 'react-toastify/dist/ReactToastify.css';
-
 import { addChannels, removeChannel, renameChannel } from '../slices/channelsSlice.js';
 import { addMessages, setCurrentText, removeMessages } from '../slices/messagesSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
 import socket from '../socket.js';
-import { getAuthHeader, logOut } from './helpers.js';
-
-const mapStateToProps = ({ channelsReducer, messagesReducer }) => {
-  const props = {
-    messagesReducer,
-    channelsReducer,
-  };
-  return props;
-};
+import { getAuthHeader, logOut, mapStateToProps } from './helpers.js';
 
 const renderModal = ({
   modalInfo, hideModal, connectState, setConnectState, notify,
@@ -74,13 +65,11 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     const fetchData = async () => {
       setConnectState(true);
       const startChannels = await axios.get('/api/v1/channels', { headers: getAuthHeader() })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
           notify(`${t('toasts.error')}`, true, true);
         });
       const startMessages = await axios.get('/api/v1/messages', { headers: getAuthHeader() })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
           notify(`${t('toasts.error')}`, true, true);
         });
       setConnectState(false);
@@ -127,8 +116,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     setConnectState(true);
     const filtedMessage = filter.clean(currentText);
     await axios.post('/api/v1/messages', { body: filtedMessage, channelId: channelId.toString(), username }, { headers: getAuthHeader() })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         notify(`${t('toasts.error')}`, true, true)();
       });
     setConnectState(false);
@@ -158,7 +146,14 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
               <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
                 <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
                   <b className="p-2">{t('chat.channels')}</b>
-                  <Button disabled={connectState} type="button" variant="outline-primary" onClick={() => showModal('adding')}>{t('chat.add')}</Button>
+                  <Button
+                    disabled={connectState}
+                    type="button"
+                    variant="outline-primary"
+                    onClick={() => showModal('adding')}
+                  >
+                    {t('chat.add')}
+                  </Button>
                 </div>
                 <Channels props={{ showModal }} />
               </div>
@@ -212,5 +207,3 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
 };
 
 export default connect(mapStateToProps)(PageChat);
-
-// На странице логина и регестрации, если токен существует сделать редерект в чат

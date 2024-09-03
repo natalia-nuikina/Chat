@@ -44,7 +44,10 @@ const Rename = (props) => {
       name: item.name,
     },
     validationSchema: yup.object({
-      name: yup.string().required(`${t('errors.validation.required')}`).min(3, `${t('errors.validation.range')}`).max(20, `${t('errors.validation.range')}`)
+      name: yup.string()
+        .required(`${t('errors.validation.required')}`)
+        .min(3, `${t('errors.validation.range')}`)
+        .max(20, `${t('errors.validation.range')}`)
         .notOneOf(channelsNames, `${t('errors.validation.unique')}`),
     }),
     onSubmit: generateOnSubmit(props, notify, t),

@@ -2,9 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
-import {
-  Button, Form, Modal,
-} from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -28,7 +26,10 @@ const Add = (props) => {
       name: '',
     },
     validationSchema: yup.object({
-      name: yup.string().required(`${t('errors.validation.required')}`).min(3, `${t('errors.validation.range')}`).max(20, `${t('errors.validation.range')}`)
+      name: yup.string()
+        .required(`${t('errors.validation.required')}`)
+        .min(3, `${t('errors.validation.range')}`)
+        .max(20, `${t('errors.validation.range')}`)
         .notOneOf(channelsNames, `${t('errors.validation.unique')}`),
     }),
     onSubmit: async (values, { resetForm }) => {

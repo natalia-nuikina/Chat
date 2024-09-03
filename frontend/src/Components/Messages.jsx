@@ -1,13 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
-
-const mapStateToProps = ({ channelsReducer, messagesReducer }) => {
-  const props = {
-    messagesReducer,
-    channelsReducer,
-  };
-  return props;
-};
+import { mapStateToProps } from './helpers';
 
 const Messages = ({ channelsReducer, messagesReducer }) => {
   const messagesEndRef = useRef(null);
@@ -19,6 +12,7 @@ const Messages = ({ channelsReducer, messagesReducer }) => {
   useEffect(() => {
     scrollToBottom();
   });
+
   if (!messages) {
     return null;
   }
