@@ -4,13 +4,27 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import './index.css';
 import './i18next.js';
+import { ErrorBoundary } from '@rollbar/react';
 import App from './App';
 import store from './slices/index.js';
 
+const rollbarConfig = {
+  accessToken: 'POST_CLIENT_ITEM_ACCESS_TOKEN',
+  environment: 'production',
+};
+
+function TestError() {
+  const a = null;
+  return a.hello();
+}
+
 const root = ReactDOM.createRoot(document.querySelector('div.h-100'));
 root.render(
-  <Provider store={store}>
-    <App />
+  <Provider config={rollbarConfig} store={store}>
+    <ErrorBoundary>
+      <TestError />
+      <App />
+    </ErrorBoundary>
   </Provider>,
 );
 
