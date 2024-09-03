@@ -32,7 +32,7 @@ const Channels = ({ props }) => {
                 id={channel.id}
                 type="button"
                 onClick={setActive(Number(channel.id))}
-                className="w-100 rounded-0 text-start btn text-truncate"
+                className="w-100 rounded-0 text-start text-truncate"
                 variant={setVariantButton(channel.id)}
               >
                 <span className="me-1">{t('chat.labelChannel')}</span>
@@ -49,7 +49,7 @@ const Channels = ({ props }) => {
               id={channel.id}
               type="button"
               onClick={setActive(Number(channel.id))}
-              className="w-100 rounded-0 text-start btn text-truncate"
+              className="w-100 rounded-0 text-start text-truncate"
               variant={setVariantButton(channel.id)}
             >
               <span className="me-1">{t('chat.labelChannel')}</span>
