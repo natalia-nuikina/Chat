@@ -15,7 +15,6 @@ const Channels = ({ props }) => {
   };
   const activeChannel = useSelector((state) => state.channelsReducer.channelId);
   useEffect(() => {
-    console.log(document.getElementById(activeChannel));
     document.getElementById(activeChannel)?.scrollIntoView();
   }, [activeChannel]);
 

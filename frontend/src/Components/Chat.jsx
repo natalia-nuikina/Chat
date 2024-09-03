@@ -7,7 +7,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import filter from 'leo-profanity';
 import getModal from './Modals/index.js';
 import 'react-toastify/dist/ReactToastify.css';
-import { addChannels, removeChannel, renameChannel } from '../slices/channelsSlice.js';
+import {
+  addChannels, removeChannel, renameChannel,
+} from '../slices/channelsSlice.js';
 import { addMessages, setCurrentText, removeMessages } from '../slices/messagesSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';

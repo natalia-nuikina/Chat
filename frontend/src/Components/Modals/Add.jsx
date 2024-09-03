@@ -5,11 +5,13 @@ import axios from 'axios';
 import { Button, Form, Modal } from 'react-bootstrap';
 import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { getAuthHeader } from '../helpers';
 import routes from '../../routes.js';
+import { setActiveChannel } from '../../slices/channelsSlice.js';
 
 const Add = (props) => {
+  const dispatch = useDispatch();
   const { t } = useTranslation();
   const {
     modalInfo, onHide, connectState, setConnectState, notify,
@@ -45,6 +47,7 @@ const Add = (props) => {
         });
       if (response && modalInfo) {
         notify(`${t('toasts.add')}`, true)();
+        dispatch(setActiveChannel(response.data.id));
       }
       setConnectState(false);
       resetForm();
