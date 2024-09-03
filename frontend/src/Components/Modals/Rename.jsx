@@ -71,7 +71,7 @@ const Rename = (props) => {
               name="name"
               isInvalid={formik.touched.name && formik.errors.name}
             />
-            <Form.Label className="visually-hidden">{t('modals.chanelName')}</Form.Label>
+            <Form.Label className="visually-hidden">{t('modals.channelName')}</Form.Label>
             <Form.Control.Feedback type="invalid">
               {formik.errors.name}
             </Form.Control.Feedback>
