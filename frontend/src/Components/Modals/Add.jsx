@@ -48,7 +48,7 @@ const Add = (props) => {
       onHide();
     },
   });
-  console.log(connectState);
+
   return (
     <Modal show centered>
       <Modal.Header closeButton onHide={onHide} disabled={connectState}>

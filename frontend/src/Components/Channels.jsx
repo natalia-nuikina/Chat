@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, ButtonGroup, DropdownButton, Dropdown,
@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { setActiveChannel } from '../slices/channelsSlice';
 
 const Channels = ({ props }) => {
+  const channelsEndRef = useRef(null);
   const { t } = useTranslation();
   const { showModal } = props;
   const dispatch = useDispatch();
@@ -14,12 +15,18 @@ const Channels = ({ props }) => {
     dispatch(setActiveChannel(id));
   };
   const activeChannel = useSelector((state) => state.channelsReducer.channelId);
+  useEffect(() => {
+    console.log(document.getElementById(activeChannel));
+    document.getElementById(activeChannel)?.scrollIntoView();
+  }, [activeChannel]);
+
   const setVariantButton = (id) => {
     if (activeChannel === Number(id)) {
       return 'secondary';
     }
     return null;
   };
+
   const channelsQ = useSelector((state) => state.channelsReducer.channels);
   if (channelsQ) {
     const channels = channelsQ.map((channel) => {
@@ -27,7 +34,7 @@ const Channels = ({ props }) => {
         return (
           <li key={channel.id} className="nav-item w-100">
             <ButtonGroup className="d-flex">
-              <Button type="button" onClick={setActive(Number(channel.id))} className="w-100 rounded-0 text-start btn text-truncate" variant={setVariantButton(channel.id)}>
+              <Button id={channel.id} type="button" onClick={setActive(Number(channel.id))} className="w-100 rounded-0 text-start btn text-truncate" variant={setVariantButton(channel.id)}>
                 <span className="me-1">{t('chat.labelChannel')}</span>
                 {channel.name}
               </Button>
@@ -38,7 +45,7 @@ const Channels = ({ props }) => {
       return (
         <li key={channel.id} className="nav-item w-100">
           <ButtonGroup className="d-flex show dropdown">
-            <Button type="button" onClick={setActive(Number(channel.id))} className="w-100 rounded-0 text-start btn text-truncate" variant={setVariantButton(channel.id)}>
+            <Button id={channel.id} ref={channelsEndRef} type="button" onClick={setActive(Number(channel.id))} className="w-100 rounded-0 text-start btn text-truncate" variant={setVariantButton(channel.id)}>
               <span className="me-1">{t('chat.labelChannel')}</span>
               {channel.name}
             </Button>

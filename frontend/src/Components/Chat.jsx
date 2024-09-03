@@ -213,5 +213,4 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
 
 export default connect(mapStateToProps)(PageChat);
 
-// TODO scroll autofocus bottom
 // На странице логина и регестрации, если токен существует сделать редерект в чат
