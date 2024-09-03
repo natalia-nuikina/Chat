@@ -9,7 +9,7 @@ import App from './App';
 import store from './slices/index.js';
 
 const rollbarConfig = {
-  accessToken: 'POST_CLIENT_ITEM_ACCESS_TOKEN',
+  accessToken: '74bc1b3567f84fce8d30f0ccaff463f6',
   environment: 'production',
 };
 
@@ -22,8 +22,8 @@ const root = ReactDOM.createRoot(document.querySelector('div.h-100'));
 root.render(
   <Provider config={rollbarConfig} store={store}>
     <ErrorBoundary>
-      <TestError />
       <App />
+      <TestError />
     </ErrorBoundary>
   </Provider>,
 );
