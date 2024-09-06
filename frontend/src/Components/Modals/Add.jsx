@@ -9,15 +9,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getAuthHeader } from '../helpers';
 import routes from '../../routes.js';
 import { setActiveChannel } from '../../slices/channelsSlice.js';
+import { hideModal } from '../../slices/modalsSlice.js';
 
 const Add = (props) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const {
-    modalInfo, onHide, connectState, setConnectState, notify,
-  } = props;
+  const { connectState, setConnectState, notify } = props;
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
+  const { modalInfo } = useSelector((state) => state.modalsReducer);
 
   const inputRef = useRef();
   useEffect(() => {
@@ -51,13 +51,13 @@ const Add = (props) => {
       }
       setConnectState(false);
       resetForm();
-      onHide();
+      dispatch(hideModal());
     },
   });
 
   return (
     <Modal show centered>
-      <Modal.Header closeButton onHide={onHide} disabled={connectState}>
+      <Modal.Header closeButton onHide={() => dispatch(hideModal())} disabled={connectState}>
         <Modal.Title>{t('modals.add')}</Modal.Title>
       </Modal.Header>
       <Form onSubmit={formik.handleSubmit}>
@@ -78,7 +78,7 @@ const Add = (props) => {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button disabled={connectState} variant="secondary" type="reset" onClick={onHide}>
+          <Button disabled={connectState} variant="secondary" type="reset" onClick={() => dispatch(hideModal())}>
             {t('modals.cansel')}
           </Button>
           <Button disabled={connectState} variant="primary" type="submit">

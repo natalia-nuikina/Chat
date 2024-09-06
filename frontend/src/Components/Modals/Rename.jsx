@@ -3,37 +3,18 @@ import axios from 'axios';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Button, Modal, Form } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
 import { getAuthHeader } from '../helpers';
 import routes from '../../routes.js';
-
-const generateOnSubmit = (props, n, tt) => async (values, { resetForm }) => {
-  const { modalInfo, onHide, setConnectState } = props;
-  const { id } = modalInfo.item;
-  setConnectState(true);
-  const filtedData = { name: filter.clean(values.name) };
-  const response = await axios
-    .patch(routes.channelPath(id), filtedData, { headers: getAuthHeader() })
-    .catch((err) => {
-      if (err.code === 'ERR_NETWORK') {
-        n(`${tt('toasts.error')}`, true, true)();
-      }
-    });
-  if (response && modalInfo) {
-    n(`${tt('toasts.rename')}`, true)();
-  }
-  setConnectState(false);
-  resetForm();
-  onHide();
-};
+import { hideModal } from '../../slices/modalsSlice.js';
 
 const Rename = (props) => {
+  const { modalInfo } = useSelector((state) => state.modalsReducer);
+  const dispatch = useDispatch();
   const { t } = useTranslation();
-  const {
-    onHide, modalInfo, connectState, notify,
-  } = props;
+  const { connectState, notify } = props;
   const { item } = modalInfo;
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
@@ -52,11 +33,29 @@ const Rename = (props) => {
         .max(20, `${t('errors.validation.range')}`)
         .notOneOf(channelsNames, `${t('errors.validation.unique')}`),
     }),
-    onSubmit: generateOnSubmit(props, notify, t),
+    onSubmit: async (values, { resetForm }) => {
+      const { setConnectState } = props;
+      const { id } = modalInfo.item;
+      setConnectState(true);
+      const filtedData = { name: filter.clean(values.name) };
+      const response = await axios
+        .patch(routes.channelPath(id), filtedData, { headers: getAuthHeader() })
+        .catch((err) => {
+          if (err.code === 'ERR_NETWORK') {
+            notify(`${t('toasts.error')}`, true, true)();
+          }
+        });
+      if (response && modalInfo) {
+        notify(`${t('toasts.rename')}`, true)();
+      }
+      setConnectState(false);
+      resetForm();
+      dispatch(hideModal());
+    },
   });
   return (
     <Modal show centered>
-      <Modal.Header closeButton onHide={onHide} disabled={connectState}>
+      <Modal.Header closeButton onHide={() => dispatch(hideModal())} disabled={connectState}>
         <Modal.Title>{t('modals.renameChannel')}</Modal.Title>
       </Modal.Header>
       <form onSubmit={formik.handleSubmit}>
@@ -78,7 +77,7 @@ const Rename = (props) => {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button disabled={connectState} variant="secondary" type="reset" onClick={onHide}>
+          <Button disabled={connectState} variant="secondary" type="reset" onClick={() => dispatch(hideModal())}>
             {t('modals.cansel')}
           </Button>
           <Button disabled={connectState} variant="primary" type="submit">

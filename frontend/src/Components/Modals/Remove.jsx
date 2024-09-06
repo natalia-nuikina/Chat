@@ -1,15 +1,17 @@
 import axios from 'axios';
 import { Button, Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
+import { useSelector, useDispatch } from 'react-redux';
 import { getAuthHeader } from '../helpers';
 import routes from '../../routes.js';
+import { hideModal } from '../../slices/modalsSlice.js';
 
 const Remove = (props) => {
+  const { modalInfo } = useSelector((state) => state.modalsReducer);
+  const dispatch = useDispatch();
   const { t } = useTranslation();
-  const {
-    onHide, connectState, setConnectState, notify,
-  } = props;
-  const removeChannel = ({ modalInfo }) => async () => {
+  const { connectState, setConnectState, notify } = props;
+  const removeChannel = () => async () => {
     const { id } = modalInfo.item;
     setConnectState(true);
     const response = await axios.delete(routes.channelPath(id), { headers: getAuthHeader() })
@@ -22,19 +24,19 @@ const Remove = (props) => {
       notify(`${t('toasts.remove')}`, true)();
     }
     setConnectState(false);
-    onHide();
+    dispatch(hideModal());
   };
 
   return (
     <Modal show centered>
-      <Modal.Header closeButton onHide={onHide} disabled={connectState}>
+      <Modal.Header closeButton onHide={() => dispatch(hideModal())} disabled={connectState}>
         <Modal.Title>{t('modals.removeChannel')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>{t('modals.sure')}</p>
       </Modal.Body>
       <Modal.Footer>
-        <Button disabled={connectState} variant="secondary" type="reset" onClick={onHide}>
+        <Button disabled={connectState} variant="secondary" type="reset" onClick={() => dispatch(hideModal())}>
           {t('modals.cansel')}
         </Button>
         <Button disabled={connectState} variant="danger" onClick={removeChannel(props)}>

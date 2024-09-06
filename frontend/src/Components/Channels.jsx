@@ -5,10 +5,10 @@ import {
 } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { setActiveChannel } from '../slices/channelsSlice';
+import { showModal } from '../slices/modalsSlice.js';
 
-const Channels = ({ props }) => {
+const Channels = () => {
   const { t } = useTranslation();
-  const { showModal } = props;
   const dispatch = useDispatch();
   const setActive = (id) => () => {
     dispatch(setActiveChannel(id));
@@ -58,7 +58,7 @@ const Channels = ({ props }) => {
               <Dropdown.Item
                 id={channel.id}
                 eventKey="1"
-                onClick={() => showModal('removing', channel)}
+                onClick={() => dispatch(showModal({ type: 'removing', item: channel }))}
               >
                 {t('chat.delete')}
               </Dropdown.Item>
@@ -66,7 +66,7 @@ const Channels = ({ props }) => {
                 id={channel.id}
                 name={channel.name}
                 eventKey="2"
-                onClick={() => showModal('renaming', channel)}
+                onClick={() => dispatch(showModal({ type: 'renaming', item: channel }))}
               >
                 {t('chat.rename')}
               </Dropdown.Item>

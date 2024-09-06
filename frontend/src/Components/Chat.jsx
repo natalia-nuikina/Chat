@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState, useRef } from 'react';
-import { connect, useDispatch } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { Button, InputGroup, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { ToastContainer, toast } from 'react-toastify';
@@ -17,27 +17,25 @@ import Messages from './Messages.jsx';
 import socket from '../socket.js';
 import { getAuthHeader, mapStateToProps } from './helpers.js';
 import routes from '../routes.js';
-
-const renderModal = ({
-  modalInfo, hideModal, connectState, setConnectState, notify,
-}) => {
-  if (!modalInfo.type) {
-    return null;
-  }
-
-  const Component = getModal(modalInfo.type);
-  return (
-    <Component
-      modalInfo={modalInfo}
-      onHide={hideModal}
-      connectState={connectState}
-      setConnectState={setConnectState}
-      notify={notify}
-    />
-  );
-};
+import { showModal } from '../slices/modalsSlice.js';
 
 const PageChat = ({ messagesReducer, channelsReducer }) => {
+  const { modalInfo } = useSelector((state) => state.modalsReducer);
+  console.log(modalInfo);
+  const renderModal = ({ connectState, setConnectState, notify }) => {
+    if (!modalInfo.type) {
+      return null;
+    }
+
+    const Component = getModal(modalInfo.type);
+    return (
+      <Component
+        connectState={connectState}
+        setConnectState={setConnectState}
+        notify={notify}
+      />
+    );
+  };
   const auth = useAuth();
   const { t } = useTranslation();
   const [connectState, setConnectState] = useState(false);
@@ -54,17 +52,6 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     }
     return null;
   };
-
-  useEffect(() => {
-    const onConnect = () => {
-      setIsConnected(true);
-    };
-    const onDisconnect = () => {
-      setIsConnected(false);
-    };
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -85,6 +72,15 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
         dispatch(addMessages(startMessages.data));
       }
     };
+
+    const onConnect = () => {
+      setIsConnected(true);
+    };
+    const onDisconnect = () => {
+      setIsConnected(false);
+    };
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
     if (isConnected) {
       fetchData();
       socket.on('newMessage', (payload) => {
@@ -136,10 +132,6 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     ref.current.focus();
   }, [currentText, channelId]);
 
-  const [modalInfo, setModalInfo] = useState({ type: null, item: null });
-  const hideModal = () => setModalInfo({ type: null, item: null });
-  const showModal = (type, item = null) => setModalInfo({ type, item });
-
   return (
     <>
       <div className="h-100" id="chat">
@@ -159,12 +151,12 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
                     disabled={connectState}
                     type="button"
                     variant="outline-primary"
-                    onClick={() => showModal('adding')}
+                    onClick={() => dispatch(showModal({ type: 'adding', item: null }))}
                   >
                     {t('chat.add')}
                   </Button>
                 </div>
-                <Channels props={{ showModal }} />
+                <Channels />
               </div>
               <div className="col p-0 h-100">
                 <div className="d-flex flex-column h-100">
@@ -208,9 +200,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
         </div>
         <ToastContainer />
       </div>
-      {renderModal({
-        modalInfo, hideModal, connectState, setConnectState, notify,
-      })}
+      {renderModal({ connectState, setConnectState, notify })}
     </>
   );
 };
