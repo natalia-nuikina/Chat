@@ -8,7 +8,7 @@ import App from './App';
 import store from './slices/index.js';
 
 const rollbarConfig = {
-  accessToken: '666fc536cb1c4f0786f0d25aad8946d4',
+  accessToken: process.env.REACT_APP_ROLLBAR_TOKEN,
   environment: 'production',
 };
 

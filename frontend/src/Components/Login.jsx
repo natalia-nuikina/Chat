@@ -38,8 +38,7 @@ const PageLogin = () => {
         });
       setConnectState(false);
       if (response) {
-        window.localStorage.setItem('userId', JSON.stringify(response.data));
-        auth.logIn();
+        auth.logIn(response.data);
         setAuthFailed(false);
         if (location.state) {
           navigate(location.state.from);

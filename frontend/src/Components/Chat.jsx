@@ -10,11 +10,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import {
   addChannels, removeChannel, renameChannel,
 } from '../slices/channelsSlice.js';
+import useAuth from '../hooks/index.jsx';
 import { addMessages, setCurrentText, removeMessages } from '../slices/messagesSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
 import socket from '../socket.js';
-import { getAuthHeader, logOut, mapStateToProps } from './helpers.js';
+import { getAuthHeader, mapStateToProps } from './helpers.js';
 import routes from '../routes.js';
 
 const renderModal = ({
@@ -37,6 +38,7 @@ const renderModal = ({
 };
 
 const PageChat = ({ messagesReducer, channelsReducer }) => {
+  const auth = useAuth();
   const { t } = useTranslation();
   const [connectState, setConnectState] = useState(false);
   const ref = useRef(null);
@@ -145,7 +147,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
           <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
             <div className="container">
               <a className="navbar-brand" href="/">{t('logo')}</a>
-              <Button disabled={connectState} onClick={logOut}>{t('chat.logOut')}</Button>
+              <Button disabled={connectState} onClick={auth.logOut}>{t('chat.logOut')}</Button>
             </div>
           </nav>
           <div className="container my-4 overflow-hidden rounded shadow" style={{ height: '85vh' }}>
