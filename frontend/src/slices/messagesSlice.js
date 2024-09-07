@@ -11,6 +11,7 @@ const messagesSlice = createSlice({
   initialState,
   reducers: {
     addMessages: (state, action) => {
+      console.log(state.messages);
       if (action.payload.length) {
         state.messages = [...state.messages, ...action.payload];
       } else {

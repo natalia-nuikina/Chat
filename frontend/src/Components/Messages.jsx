@@ -9,9 +9,10 @@ const Messages = ({ channelsReducer, messagesReducer }) => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView();
   };
+
   useEffect(() => {
     scrollToBottom();
-  });
+  }, [messages]);
 
   if (!messages) {
     return null;

@@ -79,24 +79,36 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     const onDisconnect = () => {
       setIsConnected(false);
     };
+
+    const onNewMessage = (payload) => {
+      dispatch(addMessages(payload));
+    };
+    const onNewChannel = (payload) => {
+      dispatch(addChannels(payload));
+    };
+    const onRemoveChannel = (payload) => {
+      dispatch(removeChannel(payload));
+      dispatch(removeMessages(payload));
+    };
+    const onRenameChannel = (payload) => {
+      dispatch(renameChannel(payload));
+    };
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     if (isConnected) {
       fetchData();
-      socket.on('newMessage', (payload) => {
-        dispatch(addMessages(payload));
-      });
-      socket.on('newChannel', (payload) => {
-        dispatch(addChannels(payload));
-      });
-      socket.on('removeChannel', (payload) => {
-        dispatch(removeChannel(payload));
-        dispatch(removeMessages(payload));
-      });
-      socket.on('renameChannel', (payload) => {
-        dispatch(renameChannel(payload));
-      });
+      socket.on('newMessage', onNewMessage);
+      socket.on('newChannel', onNewChannel);
+      socket.on('removeChannel', onRemoveChannel);
+      socket.on('renameChannel', onRenameChannel);
     }
+
+    return () => {
+      socket.off('newMessage', onNewMessage);
+      socket.off('newChannel', onNewChannel);
+      socket.off('removeChannel', onRemoveChannel);
+      socket.off('renameChannel', onRenameChannel);
+    };
   }, [dispatch, isConnected, t]);
 
   const GetActiveChannel = () => {
