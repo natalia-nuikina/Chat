@@ -21,7 +21,6 @@ import { showModal } from '../slices/modalsSlice.js';
 
 const PageChat = ({ messagesReducer, channelsReducer }) => {
   const { modalInfo } = useSelector((state) => state.modalsReducer);
-  console.log(modalInfo);
   const renderModal = ({ connectState, setConnectState, notify }) => {
     if (!modalInfo.type) {
       return null;
@@ -104,6 +103,8 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     }
 
     return () => {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
       socket.off('newMessage', onNewMessage);
       socket.off('newChannel', onNewChannel);
       socket.off('removeChannel', onRemoveChannel);
