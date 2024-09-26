@@ -12,7 +12,7 @@ const Messages = ({ channelsReducer, messagesReducer }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, channelId]);
 
   if (!messages) {
     return null;

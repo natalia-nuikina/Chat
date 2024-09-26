@@ -8,6 +8,8 @@ import PageLogin from './Components/Login.jsx';
 import AuthContext from './contexts/index.jsx';
 import SignUp from './Components/SignUp.jsx';
 import routes from './routes.js';
+import i18n from './i18next.js';
+import useAuth from './hooks/index.jsx';
 
 const AuthProvider = ({ children }) => {
   const logIn = (token) => {
@@ -15,10 +17,11 @@ const AuthProvider = ({ children }) => {
   };
   const logOut = () => {
     localStorage.removeItem('userId');
-    window.location.href = '/';
+    window.location.href = routes.pages.loginPage();
   };
+  const getToken = () => localStorage.getItem('userId');
   const value = useMemo(() => ({
-    logIn, logOut,
+    logIn, logOut, getToken,
   }), []);
 
   return (
@@ -29,31 +32,35 @@ const AuthProvider = ({ children }) => {
 };
 
 const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem('userId');
+  const auth = useAuth();
+  const token = auth.getToken();
   const location = useLocation();
   return (
     (token) ? children : <Navigate to={routes.pages.loginPage()} state={{ from: location }} />
   );
 };
 
-const App = () => (
-  <AuthProvider>
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={(
-            <PrivateRoute>
-              <PageChat />
-            </PrivateRoute>
-          )}
-        />
-        <Route path={routes.pages.loginPage()} element={<PageLogin />} />
-        <Route path={routes.pages.page404()} element={<Page404 />} />
-        <Route path={routes.pages.signUpPage()} element={<SignUp />} />
-      </Routes>
-    </BrowserRouter>
-  </AuthProvider>
-);
+const App = () => {
+  i18n();
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={(
+              <PrivateRoute>
+                <PageChat />
+              </PrivateRoute>
+            )}
+          />
+          <Route path={routes.pages.loginPage()} element={<PageLogin />} />
+          <Route path={routes.pages.page404()} element={<Page404 />} />
+          <Route path={routes.pages.signUpPage()} element={<SignUp />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+};
 
 export default App;

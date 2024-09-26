@@ -7,14 +7,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import filter from 'leo-profanity';
 import getModal from './Modals/index.js';
 import 'react-toastify/dist/ReactToastify.css';
-import {
-  addChannels, removeChannel, renameChannel,
-} from '../slices/channelsSlice.js';
 import useAuth from '../hooks/index.jsx';
-import { addMessages, setCurrentText, removeMessages } from '../slices/messagesSlice.js';
+import { setCurrentText } from '../slices/messagesSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
-import socket from '../socket.js';
+import Socket from '../socket.js';
 import { getAuthHeader, mapStateToProps } from './helpers.js';
 import routes from '../routes.js';
 import { showModal } from '../slices/modalsSlice.js';
@@ -44,7 +41,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   const userId = JSON.parse(localStorage.getItem('userId'));
   const { username } = userId;
   const dispatch = useDispatch();
-  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [isConnected, setIsConnected] = useState(false);
   const notify = (message, move, error = false) => () => {
     if (move) {
       return ((error) ? toast.error(message) : toast.success(message));
@@ -53,63 +50,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setConnectState(true);
-      const startChannels = await axios.get(routes.channelsPath(), { headers: getAuthHeader() })
-        .catch(() => {
-          notify(`${t('toasts.error')}`, true, true);
-        });
-      const startMessages = await axios.get(routes.messagesPath(), { headers: getAuthHeader() })
-        .catch(() => {
-          notify(`${t('toasts.error')}`, true, true);
-        });
-      setConnectState(false);
-      if (startChannels) {
-        dispatch(addChannels(startChannels.data));
-      }
-      if (startMessages) {
-        dispatch(addMessages(startMessages.data));
-      }
-    };
-
-    const onConnect = () => {
-      setIsConnected(true);
-    };
-    const onDisconnect = () => {
-      setIsConnected(false);
-    };
-
-    const onNewMessage = (payload) => {
-      dispatch(addMessages(payload));
-    };
-    const onNewChannel = (payload) => {
-      dispatch(addChannels(payload));
-    };
-    const onRemoveChannel = (payload) => {
-      dispatch(removeChannel(payload));
-      dispatch(removeMessages(payload));
-    };
-    const onRenameChannel = (payload) => {
-      dispatch(renameChannel(payload));
-    };
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    if (isConnected) {
-      fetchData();
-      socket.on('newMessage', onNewMessage);
-      socket.on('newChannel', onNewChannel);
-      socket.on('removeChannel', onRemoveChannel);
-      socket.on('renameChannel', onRenameChannel);
-    }
-
-    return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.off('newMessage', onNewMessage);
-      socket.off('newChannel', onNewChannel);
-      socket.off('removeChannel', onRemoveChannel);
-      socket.off('renameChannel', onRenameChannel);
-    };
+    Socket(setIsConnected, setConnectState, notify, t, dispatch, isConnected);
   }, [dispatch, isConnected, t]);
 
   const GetActiveChannel = () => {

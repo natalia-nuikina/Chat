@@ -2,7 +2,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider as StoreProvider } from 'react-redux';
-import './i18next.js';
 import { Provider, ErrorBoundary } from '@rollbar/react';
 
 import App from './App';
