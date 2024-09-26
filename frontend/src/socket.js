@@ -9,6 +9,7 @@ import { addMessages, removeMessages } from './slices/messagesSlice.js';
 
 const Socket = async (setConnectState, notify, t, dispatch) => {
   const fetchData = async () => {
+    setConnectState(true);
     const startChannels = await axios.get(routes.channelsPath(), { headers: getAuthHeader() })
       .catch(() => {
         notify(`${t('toasts.error')}`, true, true);
@@ -17,6 +18,7 @@ const Socket = async (setConnectState, notify, t, dispatch) => {
       .catch(() => {
         notify(`${t('toasts.error')}`, true, true);
       });
+    setConnectState(false);
     if (startChannels) {
       dispatch(addChannels(startChannels.data));
     }
@@ -28,29 +30,20 @@ const Socket = async (setConnectState, notify, t, dispatch) => {
   const sockett = io();
 
   const onNewMessage = (payload) => {
-    setConnectState(true);
     dispatch(addMessages(payload));
-    setConnectState(false);
   };
   const onNewChannel = (payload) => {
-    setConnectState(true);
     dispatch(addChannels(payload));
-    setConnectState(false);
   };
   const onRemoveChannel = (payload) => {
-    setConnectState(true);
     dispatch(removeChannel(payload));
     dispatch(removeMessages(payload));
-    setConnectState(false);
   };
   const onRenameChannel = (payload) => {
-    setConnectState(true);
     dispatch(renameChannel(payload));
-    setConnectState(false);
   };
 
   const onConnect = () => {
-    setConnectState(true);
     fetchData();
     sockett.on('newMessage', onNewMessage);
     sockett.on('newChannel', onNewChannel);
@@ -63,7 +56,6 @@ const Socket = async (setConnectState, notify, t, dispatch) => {
     sockett.off('newChannel', onNewChannel);
     sockett.off('removeChannel', onRemoveChannel);
     sockett.off('renameChannel', onRenameChannel);
-    setConnectState(false);
   };
 
   sockett.on('connect', onConnect);
