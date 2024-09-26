@@ -7,9 +7,8 @@ import {
 } from './slices/channelsSlice.js';
 import { addMessages, removeMessages } from './slices/messagesSlice.js';
 
-const Socket = async (setIsConnected, setConnectState, notify, t, dispatch, isConnected) => {
+const Socket = async (setConnectState, notify, t, dispatch) => {
   const fetchData = async () => {
-    setConnectState(true);
     const startChannels = await axios.get(routes.channelsPath(), { headers: getAuthHeader() })
       .catch(() => {
         notify(`${t('toasts.error')}`, true, true);
@@ -18,7 +17,6 @@ const Socket = async (setIsConnected, setConnectState, notify, t, dispatch, isCo
       .catch(() => {
         notify(`${t('toasts.error')}`, true, true);
       });
-    setConnectState(false);
     if (startChannels) {
       dispatch(addChannels(startChannels.data));
     }
@@ -28,44 +26,52 @@ const Socket = async (setIsConnected, setConnectState, notify, t, dispatch, isCo
   };
 
   const sockett = io();
-  const onConnect = () => {
-    setIsConnected(true);
-  };
-  const onDisconnect = () => {
-    setIsConnected(false);
-  };
 
   const onNewMessage = (payload) => {
+    setConnectState(true);
     dispatch(addMessages(payload));
+    setConnectState(false);
   };
   const onNewChannel = (payload) => {
+    setConnectState(true);
     dispatch(addChannels(payload));
+    setConnectState(false);
   };
   const onRemoveChannel = (payload) => {
+    setConnectState(true);
     dispatch(removeChannel(payload));
     dispatch(removeMessages(payload));
+    setConnectState(false);
   };
   const onRenameChannel = (payload) => {
+    setConnectState(true);
     dispatch(renameChannel(payload));
+    setConnectState(false);
   };
-  sockett.on('connect', onConnect);
-  sockett.on('disconnect', onDisconnect);
 
-  if (isConnected) {
+  const onConnect = () => {
+    setConnectState(true);
     fetchData();
     sockett.on('newMessage', onNewMessage);
     sockett.on('newChannel', onNewChannel);
     sockett.on('removeChannel', onRemoveChannel);
     sockett.on('renameChannel', onRenameChannel);
-  }
+  };
 
-  return () => {
-    sockett.off('connect', onConnect);
-    sockett.off('disconnect', onDisconnect);
+  const onDisconnect = () => {
     sockett.off('newMessage', onNewMessage);
     sockett.off('newChannel', onNewChannel);
     sockett.off('removeChannel', onRemoveChannel);
     sockett.off('renameChannel', onRenameChannel);
+    setConnectState(false);
+  };
+
+  sockett.on('connect', onConnect);
+  sockett.on('disconnect', onDisconnect);
+
+  return () => {
+    sockett.off('connect', onConnect);
+    sockett.off('disconnect', onDisconnect);
   };
 };
 
