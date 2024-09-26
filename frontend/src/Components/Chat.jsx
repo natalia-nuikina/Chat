@@ -92,7 +92,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
           <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
             <div className="container">
               <a className="navbar-brand" href="/">{t('logo')}</a>
-              <Button disabled={connectState} onClick={auth.logOut}>{t('chat.logOut')}</Button>
+              <Button onClick={auth.logOut}>{t('chat.logOut')}</Button>
             </div>
           </nav>
           <div className="container my-4 overflow-hidden rounded shadow" style={{ height: '85vh' }}>
