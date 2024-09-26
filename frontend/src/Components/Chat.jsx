@@ -38,7 +38,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   const ref = useRef(null);
   const { channelId, channels } = channelsReducer;
   const { messages, currentText } = messagesReducer;
-  const userId = JSON.parse(localStorage.getItem('userId'));
+  const userId = JSON.parse(auth.getToken('userId'));
   const { username } = userId;
   const dispatch = useDispatch();
   const notify = (message, move, error = false) => () => {
