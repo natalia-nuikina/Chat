@@ -18,7 +18,7 @@ import { showModal } from '../slices/modalsSlice.js';
 
 const PageChat = ({ messagesReducer, channelsReducer }) => {
   const { modalInfo } = useSelector((state) => state.modalsReducer);
-  const renderModal = ({ connectState, notify }) => {
+  const renderModal = ({ connectState, setConnectState, notify }) => {
     if (!modalInfo.type) {
       return null;
     }
@@ -27,6 +27,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     return (
       <Component
         connectState={connectState}
+        setConnectState={setConnectState}
         notify={notify}
       />
     );
@@ -66,6 +67,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
+    setConnectState(true);
     const filtedMessage = filter.clean(currentText);
     await axios.post(routes.messagesPath(), {
       body: filtedMessage,
@@ -75,6 +77,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
       .catch(() => {
         notify(`${t('toasts.error')}`, true, true)();
       });
+    setConnectState(false);
     dispatch(setCurrentText(''));
   };
 
@@ -150,7 +153,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
         </div>
         <ToastContainer />
       </div>
-      {renderModal({ connectState, notify })}
+      {renderModal({ connectState, setConnectState, notify })}
     </>
   );
 };
