@@ -14,7 +14,7 @@ const Rename = (props) => {
   const { modalInfo } = useSelector((state) => state.modalsReducer);
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { connectState, notify } = props;
+  const { notify } = props;
   const { item } = modalInfo;
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
@@ -55,7 +55,7 @@ const Rename = (props) => {
   });
   return (
     <Modal show centered>
-      <Modal.Header closeButton onHide={() => dispatch(hideModal())} disabled={connectState}>
+      <Modal.Header closeButton onHide={() => dispatch(hideModal())}>
         <Modal.Title>{t('modals.renameChannel')}</Modal.Title>
       </Modal.Header>
       <form onSubmit={formik.handleSubmit}>
@@ -77,10 +77,10 @@ const Rename = (props) => {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button disabled={connectState} variant="secondary" type="reset" onClick={() => dispatch(hideModal())}>
+          <Button variant="secondary" type="reset" onClick={() => dispatch(hideModal())}>
             {t('modals.cansel')}
           </Button>
-          <Button disabled={connectState} variant="primary" type="submit">
+          <Button variant="primary" type="submit">
             {t('modals.send')}
           </Button>
         </Modal.Footer>

@@ -10,7 +10,7 @@ const Remove = (props) => {
   const { modalInfo } = useSelector((state) => state.modalsReducer);
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { connectState, setConnectState, notify } = props;
+  const { setConnectState, notify } = props;
   const removeChannel = () => async () => {
     const { id } = modalInfo.item;
     setConnectState(true);
@@ -29,17 +29,17 @@ const Remove = (props) => {
 
   return (
     <Modal show centered>
-      <Modal.Header closeButton onHide={() => dispatch(hideModal())} disabled={connectState}>
+      <Modal.Header closeButton onHide={() => dispatch(hideModal())}>
         <Modal.Title>{t('modals.removeChannel')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>{t('modals.sure')}</p>
       </Modal.Body>
       <Modal.Footer>
-        <Button disabled={connectState} variant="secondary" type="reset" onClick={() => dispatch(hideModal())}>
+        <Button variant="secondary" type="reset" onClick={() => dispatch(hideModal())}>
           {t('modals.cansel')}
         </Button>
-        <Button disabled={connectState} variant="danger" onClick={removeChannel(props)}>
+        <Button variant="danger" onClick={removeChannel(props)}>
           {t('modals.remove')}
         </Button>
       </Modal.Footer>

@@ -14,7 +14,6 @@ import routes from '../routes.js';
 
 const PageLogin = () => {
   const { t } = useTranslation();
-  const [connectState, setConnectState] = useState(false);
   const [authFailed, setAuthFailed] = useState(false);
   const location = useLocation();
   const auth = useAuth();
@@ -27,7 +26,6 @@ const PageLogin = () => {
       password: '',
     },
     onSubmit: async (values) => {
-      setConnectState(true);
       const response = await axios.post(routes.loginPath(), values)
         .catch((err) => {
           if (err.status === 401) {
@@ -36,7 +34,6 @@ const PageLogin = () => {
             notify();
           }
         });
-      setConnectState(false);
       if (response) {
         auth.logIn(response.data);
         setAuthFailed(false);
@@ -107,7 +104,6 @@ const PageLogin = () => {
                       </FloatingLabel>
                     </Form.Group>
                     <Button
-                      disabled={connectState}
                       className="w-100 mb-3"
                       variant="outline-primary"
                       type="submit"

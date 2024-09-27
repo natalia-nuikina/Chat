@@ -1,5 +1,4 @@
 import { useFormik } from 'formik';
-import { useState } from 'react';
 import axios from 'axios';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +15,6 @@ import routes from '../routes.js';
 const SignUp = () => {
   const { t } = useTranslation();
   const notify = () => toast.error(`${t('toasts.networkErr')}`);
-  const [connectState, setConnectState] = useState(false);
   const auth = useAuth();
   const navigate = useNavigate();
 
@@ -40,7 +38,6 @@ const SignUp = () => {
     }),
     onSubmit: async (values) => {
       const { username, password } = values;
-      setConnectState(true);
       const response = await axios.post(routes.signupPath(), { username, password })
         .catch((err) => {
           if (err.status === 409) {
@@ -51,7 +48,6 @@ const SignUp = () => {
             notify();
           }
         });
-      setConnectState(false);
       if (response) {
         auth.logIn(response.data);
         navigate('/');
@@ -135,7 +131,6 @@ const SignUp = () => {
                       </FloatingLabel>
                     </Form.Group>
                     <Button
-                      disabled={connectState}
                       className="w-100 mb-3"
                       variant="outline-primary"
                       type="submit"

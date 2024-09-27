@@ -101,7 +101,6 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
                 <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
                   <b className="p-2">{t('chat.channels')}</b>
                   <Button
-                    disabled={connectState}
                     type="button"
                     variant="outline-primary"
                     onClick={() => dispatch(showModal({ type: 'adding', item: null }))}

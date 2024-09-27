@@ -14,7 +14,7 @@ import { hideModal } from '../../slices/modalsSlice.js';
 const Add = (props) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { connectState, setConnectState, notify } = props;
+  const { setConnectState, notify } = props;
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
   const { modalInfo } = useSelector((state) => state.modalsReducer);
@@ -57,7 +57,7 @@ const Add = (props) => {
 
   return (
     <Modal show centered>
-      <Modal.Header closeButton onHide={() => dispatch(hideModal())} disabled={connectState}>
+      <Modal.Header closeButton onHide={() => dispatch(hideModal())}>
         <Modal.Title>{t('modals.add')}</Modal.Title>
       </Modal.Header>
       <Form onSubmit={formik.handleSubmit}>
@@ -78,10 +78,10 @@ const Add = (props) => {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button disabled={connectState} variant="secondary" type="reset" onClick={() => dispatch(hideModal())}>
+          <Button variant="secondary" type="reset" onClick={() => dispatch(hideModal())}>
             {t('modals.cansel')}
           </Button>
-          <Button disabled={connectState} variant="primary" type="submit">
+          <Button variant="primary" type="submit">
             {t('modals.send')}
           </Button>
         </Modal.Footer>
