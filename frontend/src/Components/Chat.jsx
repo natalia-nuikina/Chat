@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { Button, InputGroup, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,7 @@ import { showModal } from '../slices/modalsSlice.js';
 
 const PageChat = ({ messagesReducer, channelsReducer }) => {
   const { modalInfo } = useSelector((state) => state.modalsReducer);
-  const renderModal = ({ connectState, setConnectState, notify }) => {
+  const renderModal = ({ notify }) => {
     if (!modalInfo.type) {
       return null;
     }
@@ -26,15 +26,12 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     const Component = getModal(modalInfo.type);
     return (
       <Component
-        connectState={connectState}
-        setConnectState={setConnectState}
         notify={notify}
       />
     );
   };
   const auth = useAuth();
   const { t } = useTranslation();
-  const [connectState, setConnectState] = useState(false);
   const ref = useRef(null);
   const { channelId, channels } = channelsReducer;
   const { messages, currentText } = messagesReducer;
@@ -67,7 +64,6 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    setConnectState(true);
     const filtedMessage = filter.clean(currentText);
     await axios.post(routes.messagesPath(), {
       body: filtedMessage,
@@ -77,7 +73,6 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
       .catch(() => {
         notify(`${t('toasts.error')}`, true, true)();
       });
-    setConnectState(false);
     dispatch(setCurrentText(''));
   };
 
@@ -152,7 +147,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
         </div>
         <ToastContainer />
       </div>
-      {renderModal({ connectState, setConnectState, notify })}
+      {renderModal({ notify })}
     </>
   );
 };

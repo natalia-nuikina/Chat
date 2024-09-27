@@ -14,7 +14,7 @@ import { hideModal } from '../../slices/modalsSlice.js';
 const Add = (props) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { setConnectState, notify } = props;
+  const { notify } = props;
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
   const { modalInfo } = useSelector((state) => state.modalsReducer);
@@ -36,7 +36,6 @@ const Add = (props) => {
         .notOneOf(channelsNames, `${t('errors.validation.unique')}`),
     }),
     onSubmit: async (values, { resetForm }) => {
-      setConnectState(true);
       const filtedData = { name: filter.clean(values.name) };
       const response = await axios
         .post(routes.channelsPath(), filtedData, { headers: getAuthHeader() })
@@ -49,7 +48,6 @@ const Add = (props) => {
         notify(`${t('toasts.add')}`, true)();
         dispatch(setActiveChannel(response.data.id));
       }
-      setConnectState(false);
       resetForm();
       dispatch(hideModal());
     },

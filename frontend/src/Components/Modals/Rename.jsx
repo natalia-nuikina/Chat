@@ -34,9 +34,7 @@ const Rename = (props) => {
         .notOneOf(channelsNames, `${t('errors.validation.unique')}`),
     }),
     onSubmit: async (values, { resetForm }) => {
-      const { setConnectState } = props;
       const { id } = modalInfo.item;
-      setConnectState(true);
       const filtedData = { name: filter.clean(values.name) };
       const response = await axios
         .patch(routes.channelPath(id), filtedData, { headers: getAuthHeader() })
@@ -48,7 +46,6 @@ const Rename = (props) => {
       if (response && modalInfo) {
         notify(`${t('toasts.rename')}`, true)();
       }
-      setConnectState(false);
       resetForm();
       dispatch(hideModal());
     },

@@ -10,10 +10,9 @@ const Remove = (props) => {
   const { modalInfo } = useSelector((state) => state.modalsReducer);
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { setConnectState, notify } = props;
+  const { notify } = props;
   const removeChannel = () => async () => {
     const { id } = modalInfo.item;
-    setConnectState(true);
     const response = await axios.delete(routes.channelPath(id), { headers: getAuthHeader() })
       .catch((err) => {
         if (err.code === 'ERR_NETWORK') {
@@ -23,7 +22,6 @@ const Remove = (props) => {
     if (response) {
       notify(`${t('toasts.remove')}`, true)();
     }
-    setConnectState(false);
     dispatch(hideModal());
   };
 
