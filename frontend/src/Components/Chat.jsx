@@ -49,7 +49,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   };
 
   useEffect(() => {
-    Socket(setConnectState, notify, t, dispatch);
+    Socket(notify, t, dispatch);
   }, [dispatch, t]);
 
   const GetActiveChannel = () => {

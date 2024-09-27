@@ -7,9 +7,8 @@ import {
 } from './slices/channelsSlice.js';
 import { addMessages, removeMessages } from './slices/messagesSlice.js';
 
-const Socket = async (setConnectState, notify, t, dispatch) => {
+const Socket = async (notify, t, dispatch) => {
   const fetchData = async () => {
-    setConnectState(true);
     const startChannels = await axios.get(routes.channelsPath(), { headers: getAuthHeader() })
       .catch(() => {
         notify(`${t('toasts.error')}`, true, true);
@@ -18,7 +17,6 @@ const Socket = async (setConnectState, notify, t, dispatch) => {
       .catch(() => {
         notify(`${t('toasts.error')}`, true, true);
       });
-    setConnectState(false);
     if (startChannels) {
       dispatch(addChannels(startChannels.data));
     }
