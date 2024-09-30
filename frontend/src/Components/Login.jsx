@@ -40,7 +40,7 @@ const PageLogin = () => {
         if (location.state) {
           navigate(location.state.from);
         }
-        navigate('/');
+        navigate(routes.pages.chatPage());
       }
     },
   });
@@ -49,7 +49,7 @@ const PageLogin = () => {
       <div className="d-flex flex-column h-100">
         <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
           <div className="container">
-            <a className="navbar-brand" href="/">{t('logo')}</a>
+            <a className="navbar-brand" href={routes.pages.chatPage()}>{t('logo')}</a>
           </div>
         </nav>
         <div className="container-fluid h-100">

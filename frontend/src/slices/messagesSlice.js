@@ -10,12 +10,11 @@ const messagesSlice = createSlice({
   name: 'messages',
   initialState,
   reducers: {
+    addStartMessages: (state, action) => {
+      state.messages = action.payload;
+    },
     addMessages: (state, action) => {
-      if (action.payload.length) {
-        state.messages = [...state.messages, ...action.payload];
-      } else {
-        state.messages = [...state.messages, action.payload];
-      }
+      state.messages = [...state.messages, action.payload];
     },
     setCurrentText: (state, action) => {
       state.currentText = action.payload;
@@ -28,6 +27,8 @@ const messagesSlice = createSlice({
   },
 });
 
-export const { addMessages, setCurrentText, removeMessages } = messagesSlice.actions;
+export const {
+  addStartMessages, addMessages, setCurrentText, removeMessages,
+} = messagesSlice.actions;
 
 export default messagesSlice.reducer;

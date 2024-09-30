@@ -3,11 +3,11 @@ import axios from 'axios';
 import routes from './routes.js';
 import { getAuthHeader } from './Components/helpers.js';
 import {
-  addChannels, removeChannel, renameChannel,
+  addStartChannels, addChannels, removeChannel, renameChannel,
 } from './slices/channelsSlice.js';
-import { addMessages, removeMessages } from './slices/messagesSlice.js';
+import { addStartMessages, addMessages, removeMessages } from './slices/messagesSlice.js';
 
-const Socket = async (notify, t, dispatch) => {
+const dispatchChanges = async (notify, t, dispatch) => {
   const fetchData = async () => {
     const startChannels = await axios.get(routes.channelsPath(), { headers: getAuthHeader() })
       .catch(() => {
@@ -18,14 +18,14 @@ const Socket = async (notify, t, dispatch) => {
         notify(`${t('toasts.error')}`, true, true);
       });
     if (startChannels) {
-      dispatch(addChannels(startChannels.data));
+      dispatch(addStartChannels(startChannels.data));
     }
     if (startMessages) {
-      dispatch(addMessages(startMessages.data));
+      dispatch(addStartMessages(startMessages.data));
     }
   };
 
-  const sockett = io();
+  const socket = io();
 
   const onNewMessage = (payload) => {
     dispatch(addMessages(payload));
@@ -43,26 +43,26 @@ const Socket = async (notify, t, dispatch) => {
 
   const onConnect = () => {
     fetchData();
-    sockett.on('newMessage', onNewMessage);
-    sockett.on('newChannel', onNewChannel);
-    sockett.on('removeChannel', onRemoveChannel);
-    sockett.on('renameChannel', onRenameChannel);
+    socket.on('newMessage', onNewMessage);
+    socket.on('newChannel', onNewChannel);
+    socket.on('removeChannel', onRemoveChannel);
+    socket.on('renameChannel', onRenameChannel);
   };
 
   const onDisconnect = () => {
-    sockett.off('newMessage', onNewMessage);
-    sockett.off('newChannel', onNewChannel);
-    sockett.off('removeChannel', onRemoveChannel);
-    sockett.off('renameChannel', onRenameChannel);
+    socket.off('newMessage', onNewMessage);
+    socket.off('newChannel', onNewChannel);
+    socket.off('removeChannel', onRemoveChannel);
+    socket.off('renameChannel', onRenameChannel);
   };
 
-  sockett.on('connect', onConnect);
-  sockett.on('disconnect', onDisconnect);
+  socket.on('connect', onConnect);
+  socket.on('disconnect', onDisconnect);
 
   return () => {
-    sockett.off('connect', onConnect);
-    sockett.off('disconnect', onDisconnect);
+    socket.off('connect', onConnect);
+    socket.off('disconnect', onDisconnect);
   };
 };
 
-export default Socket;
+export default dispatchChanges;

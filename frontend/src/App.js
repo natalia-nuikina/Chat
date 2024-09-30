@@ -47,7 +47,7 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route
-            path="/"
+            path={routes.pages.chatPage()}
             element={(
               <PrivateRoute>
                 <PageChat />

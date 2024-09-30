@@ -11,7 +11,7 @@ import useAuth from '../hooks/index.jsx';
 import { setCurrentText } from '../slices/messagesSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
-import Socket from '../socket.js';
+import dispatchChanges from '../socket.js';
 import { getAuthHeader, mapStateToProps } from './helpers.js';
 import routes from '../routes.js';
 import { showModal } from '../slices/modalsSlice.js';
@@ -46,7 +46,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   };
 
   useEffect(() => {
-    Socket(notify, t, dispatch);
+    dispatchChanges(notify, t, dispatch);
   }, [dispatch, t]);
 
   const GetActiveChannel = () => {

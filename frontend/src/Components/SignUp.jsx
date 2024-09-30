@@ -50,7 +50,7 @@ const SignUp = () => {
         });
       if (response) {
         auth.logIn(response.data);
-        navigate('/');
+        navigate(routes.pages.chatPage());
       }
     },
   });

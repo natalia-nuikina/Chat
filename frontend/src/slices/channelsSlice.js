@@ -10,12 +10,11 @@ const channelsSlice = createSlice({
   name: 'channels',
   initialState,
   reducers: {
+    addStartChannels: (state, action) => {
+      state.channels = action.payload;
+    },
     addChannels: (state, action) => {
-      if (state.channels.length === 0) {
-        state.channels = action.payload;
-      } else {
-        state.channels = [...state.channels, action.payload];
-      }
+      state.channels = [...state.channels, action.payload];
     },
     setActiveChannel: (state, action) => {
       state.channelId = Number(action.payload);
@@ -37,7 +36,7 @@ const channelsSlice = createSlice({
 });
 
 export const {
-  addChannels, setActiveChannel, removeChannel, renameChannel,
+  addStartChannels, addChannels, setActiveChannel, removeChannel, renameChannel,
 } = channelsSlice.actions;
 
 export default channelsSlice.reducer;
