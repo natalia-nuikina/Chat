@@ -7,14 +7,14 @@ import { ToastContainer, toast } from 'react-toastify';
 import filter from 'leo-profanity';
 import getModal from './Modals/index.js';
 import 'react-toastify/dist/ReactToastify.css';
-import useAuth from '../hooks/index.jsx';
 import { setCurrentText } from '../slices/messagesSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
-import dispatchChanges from '../socket.js';
-import { getAuthHeader, mapStateToProps } from './helpers.js';
+import DispatchChanges from '../socket.js';
+import useAuthHeader, { mapStateToProps } from './helpers.js';
 import routes from '../routes.js';
 import { showModal } from '../slices/modalsSlice.js';
+import { logOut } from '../slices/userSlice.js';
 
 const PageChat = ({ messagesReducer, channelsReducer }) => {
   const { modalInfo } = useSelector((state) => state.modalsReducer);
@@ -30,14 +30,14 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
       />
     );
   };
-  const auth = useAuth();
+
   const { t } = useTranslation();
   const ref = useRef(null);
   const { channelId, channels } = channelsReducer;
   const { messages, currentText } = messagesReducer;
-  const userId = JSON.parse(auth.getToken('userId'));
-  const { username } = userId;
+  const { username } = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
+  const headers = useAuthHeader();
   const notify = (message, move, error = false) => () => {
     if (move) {
       return ((error) ? toast.error(message) : toast.success(message));
@@ -46,7 +46,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   };
 
   useEffect(() => {
-    dispatchChanges(notify, t, dispatch);
+    DispatchChanges(notify, t, dispatch);
   }, [dispatch, t]);
 
   const GetActiveChannel = () => {
@@ -69,7 +69,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
       body: filtedMessage,
       channelId: channelId.toString(),
       username,
-    }, { headers: getAuthHeader() })
+    }, { headers })
       .catch(() => {
         notify(`${t('toasts.error')}`, true, true)();
       });
@@ -87,7 +87,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
           <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
             <div className="container">
               <a className="navbar-brand" href="/">{t('logo')}</a>
-              <Button onClick={auth.logOut}>{t('chat.logOut')}</Button>
+              <Button onClick={() => dispatch(logOut())}>{t('chat.logOut')}</Button>
             </div>
           </nav>
           <div className="container my-4 overflow-hidden rounded shadow" style={{ height: '85vh' }}>

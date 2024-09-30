@@ -6,7 +6,7 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
-import { getAuthHeader } from '../helpers';
+import useAuthHeader from '../helpers';
 import routes from '../../routes.js';
 import { hideModal } from '../../slices/modalsSlice.js';
 
@@ -19,6 +19,7 @@ const Rename = (props) => {
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
   const inputRef = useRef();
+  const headers = useAuthHeader();
   useEffect(() => {
     inputRef.current.focus();
   }, []);
@@ -37,7 +38,7 @@ const Rename = (props) => {
       const { id } = modalInfo.item;
       const filtedData = { name: filter.clean(values.name) };
       const response = await axios
-        .patch(routes.channelPath(id), filtedData, { headers: getAuthHeader() })
+        .patch(routes.channelPath(id), filtedData, { headers })
         .catch((err) => {
           if (err.code === 'ERR_NETWORK') {
             notify(`${t('toasts.error')}`, true, true)();

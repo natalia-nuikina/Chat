@@ -5,18 +5,19 @@ import { useNavigate } from 'react-router-dom';
 import {
   Form, Button, FloatingLabel, Card,
 } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
-import useAuth from '../hooks/index.jsx';
 import logo from './img/young-woman-waving-hand-talking-bubbles-vector.jpg';
 import routes from '../routes.js';
+import { logIn } from '../slices/userSlice.js';
 
 const SignUp = () => {
   const { t } = useTranslation();
   const notify = () => toast.error(`${t('toasts.networkErr')}`);
-  const auth = useAuth();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const formik = useFormik({
     initialValues: {
@@ -49,7 +50,7 @@ const SignUp = () => {
           }
         });
       if (response) {
-        auth.logIn(response.data);
+        dispatch(logIn(response.data));
         navigate(routes.pages.chatPage());
       }
     },

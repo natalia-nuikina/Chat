@@ -1,19 +1,20 @@
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import routes from './routes.js';
-import { getAuthHeader } from './Components/helpers.js';
+import useAuthHeader from './Components/helpers.js';
 import {
   addStartChannels, addChannels, removeChannel, renameChannel,
 } from './slices/channelsSlice.js';
 import { addStartMessages, addMessages, removeMessages } from './slices/messagesSlice.js';
 
-const dispatchChanges = async (notify, t, dispatch) => {
+const DispatchChanges = async (notify, t, dispatch) => {
+  const headers = useAuthHeader();
   const fetchData = async () => {
-    const startChannels = await axios.get(routes.channelsPath(), { headers: getAuthHeader() })
+    const startChannels = await axios.get(routes.channelsPath(), { headers })
       .catch(() => {
         notify(`${t('toasts.error')}`, true, true);
       });
-    const startMessages = await axios.get(routes.messagesPath(), { headers: getAuthHeader() })
+    const startMessages = await axios.get(routes.messagesPath(), { headers })
       .catch(() => {
         notify(`${t('toasts.error')}`, true, true);
       });
@@ -65,4 +66,4 @@ const dispatchChanges = async (notify, t, dispatch) => {
   };
 };
 
-export default dispatchChanges;
+export default DispatchChanges;

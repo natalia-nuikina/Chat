@@ -1,6 +1,8 @@
-export const getAuthHeader = () => {
-  const userId = JSON.parse(localStorage.getItem('userId'));
-  return ((userId && userId.token) ? { Authorization: `Bearer ${userId.token}` } : {});
+import { useSelector } from 'react-redux';
+
+const useAuthHeader = () => {
+  const { token } = useSelector((state) => state.userReducer);
+  return ((token.length > 0) ? { Authorization: `Bearer ${token}` } : {});
 };
 
 export const mapStateToProps = ({ channelsReducer, messagesReducer }) => {
@@ -10,3 +12,5 @@ export const mapStateToProps = ({ channelsReducer, messagesReducer }) => {
   };
   return props;
 };
+
+export default useAuthHeader;

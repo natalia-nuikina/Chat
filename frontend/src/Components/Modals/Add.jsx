@@ -6,7 +6,7 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-import { getAuthHeader } from '../helpers';
+import useAuthHeader from '../helpers';
 import routes from '../../routes.js';
 import { setActiveChannel } from '../../slices/channelsSlice.js';
 import { hideModal } from '../../slices/modalsSlice.js';
@@ -18,6 +18,7 @@ const Add = (props) => {
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
   const { modalInfo } = useSelector((state) => state.modalsReducer);
+  const headers = useAuthHeader();
 
   const inputRef = useRef();
   useEffect(() => {
@@ -38,7 +39,7 @@ const Add = (props) => {
     onSubmit: async (values, { resetForm }) => {
       const filtedData = { name: filter.clean(values.name) };
       const response = await axios
-        .post(routes.channelsPath(), filtedData, { headers: getAuthHeader() })
+        .post(routes.channelsPath(), filtedData, { headers })
         .catch((err) => {
           if (err.code === 'ERR_NETWORK') {
             notify(`${t('toasts.error')}`, true, true)();

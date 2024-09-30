@@ -5,20 +5,21 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Form, Button, FloatingLabel, Card,
 } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
-import useAuth from '../hooks/index.jsx';
 import logo from './img/poster_event_1336266.jpg';
 import routes from '../routes.js';
+import { logIn } from '../slices/userSlice.js';
 
 const PageLogin = () => {
   const { t } = useTranslation();
   const [authFailed, setAuthFailed] = useState(false);
   const location = useLocation();
-  const auth = useAuth();
   const navigate = useNavigate();
   const notify = () => toast.error(`${t('toasts.networkErr')}`);
+  const dispatch = useDispatch();
 
   const formik = useFormik({
     initialValues: {
@@ -35,7 +36,7 @@ const PageLogin = () => {
           }
         });
       if (response) {
-        auth.logIn(response.data);
+        dispatch(logIn(response.data));
         setAuthFailed(false);
         if (location.state) {
           navigate(location.state.from);
