@@ -1,7 +1,7 @@
 import { Button, Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-import { hideModal } from '../../slices/modalsSlice.js';
+import { hideModal } from '../../services/slices/modalsSlice.js';
 import { useDeleteChannelMutation } from '../../services/api.js';
 
 const Remove = (props) => {

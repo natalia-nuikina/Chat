@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
-import { addChannels, removeChannel, renameChannel } from './slices/channelsSlice.js';
-import { addMessages, removeMessages } from './slices/messagesSlice.js';
+import { addChannels, removeChannel, renameChannel } from './services/slices/channelsSlice.js';
+import { addMessages, removeMessages } from './services/slices/messagesSlice.js';
 
 const DispatchChanges = async (dispatch, setIsConnected) => {
   const socket = io();

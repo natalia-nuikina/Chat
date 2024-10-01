@@ -8,14 +8,14 @@ import { ToastContainer, toast } from 'react-toastify';
 import filter from 'leo-profanity';
 import getModal from './Modals/index.js';
 import 'react-toastify/dist/ReactToastify.css';
-import { addStartMessages, setCurrentText } from '../slices/messagesSlice.js';
-import { addStartChannels } from '../slices/channelsSlice.js';
+import { addStartMessages, setCurrentText } from '../services/slices/messagesSlice.js';
+import { addStartChannels } from '../services/slices/channelsSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
 import DispatchChanges from '../socket.js';
 import { mapStateToProps } from './helpers.js';
-import { showModal } from '../slices/modalsSlice.js';
-import { logOut } from '../slices/userSlice.js';
+import { showModal } from '../services/slices/modalsSlice.js';
+import { logOut } from '../services/slices/userSlice.js';
 import { useStartChannelsQuery, useStartMessagesQuery, useAddMessageMutation } from '../services/api.js';
 
 const PageChat = ({ messagesReducer, channelsReducer }) => {

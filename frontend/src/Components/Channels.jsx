@@ -4,8 +4,8 @@ import {
   Button, ButtonGroup, DropdownButton, Dropdown,
 } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { setActiveChannel } from '../slices/channelsSlice';
-import { showModal } from '../slices/modalsSlice.js';
+import { setActiveChannel } from '../services/slices/channelsSlice.js';
+import { showModal } from '../services/slices/modalsSlice.js';
 
 const Channels = () => {
   const { t } = useTranslation();

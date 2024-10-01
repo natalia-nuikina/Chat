@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import routes from '../routes.js';
+import routes from '../../routes.js';
 
 const initialState = {
   token: (localStorage.getItem('userId')) ? JSON.parse(localStorage.getItem('userId')).token : '',

@@ -5,8 +5,8 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-import { setActiveChannel } from '../../slices/channelsSlice.js';
-import { hideModal } from '../../slices/modalsSlice.js';
+import { setActiveChannel } from '../../services/slices/channelsSlice.js';
+import { hideModal } from '../../services/slices/modalsSlice.js';
 import { useAddChannelMutation } from '../../services/api.js';
 
 const Add = (props) => {

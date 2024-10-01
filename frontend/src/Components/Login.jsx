@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import logo from './img/poster_event_1336266.jpg';
 import routes from '../routes.js';
 import { useLoginMutation } from '../services/api.js';
-import { logIn } from '../slices/userSlice.js';
+import { logIn } from '../services/slices/userSlice.js';
 
 const PageLogin = () => {
   const { t } = useTranslation();

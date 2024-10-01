@@ -5,7 +5,7 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
-import { hideModal } from '../../slices/modalsSlice.js';
+import { hideModal } from '../../services/slices/modalsSlice.js';
 import { useRenameChannelMutation } from '../../services/api.js';
 
 const Rename = (props) => {

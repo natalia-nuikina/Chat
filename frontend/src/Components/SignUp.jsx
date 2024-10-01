@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 import logo from './img/young-woman-waving-hand-talking-bubbles-vector.jpg';
 import routes from '../routes.js';
-import { logIn } from '../slices/userSlice.js';
+import { logIn } from '../services/slices/userSlice.js';
 import { useCreateUserMutation } from '../services/api.js';
 
 const SignUp = () => {
