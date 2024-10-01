@@ -1,31 +1,8 @@
 import { io } from 'socket.io-client';
-import axios from 'axios';
-import routes from './routes.js';
-import useAuthHeader from './Components/helpers.js';
-import {
-  addStartChannels, addChannels, removeChannel, renameChannel,
-} from './slices/channelsSlice.js';
-import { addStartMessages, addMessages, removeMessages } from './slices/messagesSlice.js';
+import { addChannels, removeChannel, renameChannel } from './slices/channelsSlice.js';
+import { addMessages, removeMessages } from './slices/messagesSlice.js';
 
-const DispatchChanges = async (notify, t, dispatch) => {
-  const headers = useAuthHeader();
-  const fetchData = async () => {
-    const startChannels = await axios.get(routes.channelsPath(), { headers })
-      .catch(() => {
-        notify(`${t('toasts.error')}`, true, true);
-      });
-    const startMessages = await axios.get(routes.messagesPath(), { headers })
-      .catch(() => {
-        notify(`${t('toasts.error')}`, true, true);
-      });
-    if (startChannels) {
-      dispatch(addStartChannels(startChannels.data));
-    }
-    if (startMessages) {
-      dispatch(addStartMessages(startMessages.data));
-    }
-  };
-
+const DispatchChanges = async (dispatch, setIsConnected) => {
   const socket = io();
 
   const onNewMessage = (payload) => {
@@ -43,7 +20,7 @@ const DispatchChanges = async (notify, t, dispatch) => {
   };
 
   const onConnect = () => {
-    fetchData();
+    setIsConnected(true);
     socket.on('newMessage', onNewMessage);
     socket.on('newChannel', onNewChannel);
     socket.on('removeChannel', onRemoveChannel);
@@ -55,6 +32,7 @@ const DispatchChanges = async (notify, t, dispatch) => {
     socket.off('newChannel', onNewChannel);
     socket.off('removeChannel', onRemoveChannel);
     socket.off('renameChannel', onRenameChannel);
+    setIsConnected(false);
   };
 
   socket.on('connect', onConnect);

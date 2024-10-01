@@ -1,5 +1,7 @@
 import axios from 'axios';
-import React, { useEffect, useRef } from 'react';
+import React, {
+  useEffect, useRef, useState, useCallback,
+} from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { Button, InputGroup, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
@@ -7,11 +9,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import filter from 'leo-profanity';
 import getModal from './Modals/index.js';
 import 'react-toastify/dist/ReactToastify.css';
-import { setCurrentText } from '../slices/messagesSlice.js';
+import { addStartMessages, setCurrentText } from '../slices/messagesSlice.js';
+import { addStartChannels } from '../slices/channelsSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
 import DispatchChanges from '../socket.js';
-import useAuthHeader, { mapStateToProps } from './helpers.js';
+import { getAuthHeader, mapStateToProps } from './helpers.js';
 import routes from '../routes.js';
 import { showModal } from '../slices/modalsSlice.js';
 import { logOut } from '../slices/userSlice.js';
@@ -37,7 +40,8 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   const { messages, currentText } = messagesReducer;
   const { username } = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
-  const headers = useAuthHeader();
+  const headers = getAuthHeader();
+  const [isConnected, setIsConnected] = useState(false);
   const notify = (message, move, error = false) => () => {
     if (move) {
       return ((error) ? toast.error(message) : toast.success(message));
@@ -45,9 +49,32 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     return null;
   };
 
+  const fetchData = useCallback(async () => {
+    const startChannels = await axios.get(routes.channelsPath(), { headers })
+      .catch(() => {
+        notify(`${t('toasts.error')}`, true, true);
+      });
+    const startMessages = await axios.get(routes.messagesPath(), { headers })
+      .catch(() => {
+        notify(`${t('toasts.error')}`, true, true);
+      });
+    if (startChannels) {
+      dispatch(addStartChannels(startChannels.data));
+    }
+    if (startMessages) {
+      dispatch(addStartMessages(startMessages.data));
+    }
+  }, [dispatch, headers, t]);
+
   useEffect(() => {
-    DispatchChanges(notify, t, dispatch);
-  }, [dispatch, t]);
+    if (isConnected) {
+      fetchData();
+    }
+  }, [isConnected, fetchData]);
+
+  useEffect(() => {
+    DispatchChanges(dispatch, setIsConnected);
+  }, [dispatch]);
 
   const GetActiveChannel = () => {
     const [activeChannel] = channels.filter((channel) => Number(channel.id) === Number(channelId));

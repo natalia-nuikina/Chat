@@ -6,7 +6,7 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-import useAuthHeader from '../helpers';
+import { getAuthHeader } from '../helpers.js';
 import routes from '../../routes.js';
 import { setActiveChannel } from '../../slices/channelsSlice.js';
 import { hideModal } from '../../slices/modalsSlice.js';
@@ -18,7 +18,7 @@ const Add = (props) => {
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
   const { modalInfo } = useSelector((state) => state.modalsReducer);
-  const headers = useAuthHeader();
+  const headers = getAuthHeader();
 
   const inputRef = useRef();
   useEffect(() => {

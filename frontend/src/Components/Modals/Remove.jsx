@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Button, Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-import useAuthHeader from '../helpers';
+import { getAuthHeader } from '../helpers.js';
 import routes from '../../routes.js';
 import { hideModal } from '../../slices/modalsSlice.js';
 
@@ -11,7 +11,7 @@ const Remove = (props) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { notify } = props;
-  const headers = useAuthHeader();
+  const headers = getAuthHeader();
   const removeChannel = () => async () => {
     const { id } = modalInfo.item;
     const response = await axios.delete(routes.channelPath(id), { headers })

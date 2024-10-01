@@ -6,7 +6,7 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
-import useAuthHeader from '../helpers';
+import { getAuthHeader } from '../helpers.js';
 import routes from '../../routes.js';
 import { hideModal } from '../../slices/modalsSlice.js';
 
@@ -19,7 +19,7 @@ const Rename = (props) => {
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
   const inputRef = useRef();
-  const headers = useAuthHeader();
+  const headers = getAuthHeader();
   useEffect(() => {
     inputRef.current.focus();
   }, []);
