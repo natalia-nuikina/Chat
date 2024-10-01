@@ -5,7 +5,6 @@ import { mapStateToProps } from './helpers.js';
 const Messages = ({ channelsReducer, messagesReducer }) => {
   const messagesEndRef = useRef(null);
   const { messages } = messagesReducer;
-  console.log(messages);
   const { channelId } = channelsReducer;
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView();

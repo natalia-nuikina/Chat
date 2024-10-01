@@ -11,6 +11,7 @@ import i18n from './i18next.js';
 
 const PrivateRoute = ({ children }) => {
   const { token } = useSelector((state) => state.userReducer);
+
   const location = useLocation();
   return (
     (token.length > 0) ? children : (

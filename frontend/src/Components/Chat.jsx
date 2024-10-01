@@ -1,6 +1,6 @@
-import axios from 'axios';
+// import axios from 'axios';
 import React, {
-  useEffect, useRef, useState, useCallback,
+  useEffect, useRef, useState,
 } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { Button, InputGroup, Form } from 'react-bootstrap';
@@ -14,10 +14,11 @@ import { addStartChannels } from '../slices/channelsSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
 import DispatchChanges from '../socket.js';
-import { getAuthHeader, mapStateToProps } from './helpers.js';
-import routes from '../routes.js';
+import { mapStateToProps } from './helpers.js';
+// import routes from '../routes.js';
 import { showModal } from '../slices/modalsSlice.js';
 import { logOut } from '../slices/userSlice.js';
+import { useStartChannelsQuery, useStartMessagesQuery, useAddMessageMutation } from '../services/api.js';
 
 const PageChat = ({ messagesReducer, channelsReducer }) => {
   const { modalInfo } = useSelector((state) => state.modalsReducer);
@@ -40,37 +41,41 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   const { messages, currentText } = messagesReducer;
   const { username } = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
-  const headers = getAuthHeader();
   const [isConnected, setIsConnected] = useState(false);
-  const notify = (message, move, error = false) => () => {
+  const { data: startChannels } = useStartChannelsQuery();
+  const { data: startMessages, refetch } = useStartMessagesQuery();
+  const [addMessage] = useAddMessageMutation();
+  const notify = (message, move, err = false) => () => {
     if (move) {
-      return ((error) ? toast.error(message) : toast.success(message));
+      return ((err) ? toast.error(message) : toast.success(message));
     }
     return null;
   };
 
-  const fetchData = useCallback(async () => {
-    const startChannels = await axios.get(routes.channelsPath(), { headers })
-      .catch(() => {
-        notify(`${t('toasts.error')}`, true, true);
-      });
-    const startMessages = await axios.get(routes.messagesPath(), { headers })
-      .catch(() => {
-        notify(`${t('toasts.error')}`, true, true);
-      });
-    if (startChannels) {
-      dispatch(addStartChannels(startChannels.data));
-    }
-    if (startMessages) {
-      dispatch(addStartMessages(startMessages.data));
-    }
-  }, [dispatch, headers, t]);
+  // const fetchData = useCallback(async () => {
+  //   const startChannels = await axios.get(routes.channelsPath(), { headers: getAuthHeader() })
+  //     .catch(() => {
+  //       notify(`${t('toasts.error')}`, true, true);
+  //     });
+  //   const startMessages = await axios.get(routes.messagesPath(), { headers: getAuthHeader() })
+  //     .catch(() => {
+  //       notify(`${t('toasts.error')}`, true, true);
+  //     });
+  //   if (startChannels) {
+  //     dispatch(addStartChannels(startChannels.data));
+  //   }
+  //   if (startMessages) {
+  //     dispatch(addStartMessages(startMessages.data));
+  //   }
+  // }, [dispatch, t]);
 
   useEffect(() => {
     if (isConnected) {
-      fetchData();
+      refetch();
+      dispatch(addStartChannels(startChannels));
+      dispatch(addStartMessages(startMessages));
     }
-  }, [isConnected, fetchData]);
+  }, [isConnected, dispatch, startChannels, startMessages, refetch]);
 
   useEffect(() => {
     DispatchChanges(dispatch, setIsConnected);
@@ -92,11 +97,13 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   const sendMessage = async (e) => {
     e.preventDefault();
     const filtedMessage = filter.clean(currentText);
-    await axios.post(routes.messagesPath(), {
+    const newMessage = {
       body: filtedMessage,
       channelId: channelId.toString(),
       username,
-    }, { headers })
+    };
+    await addMessage(newMessage)
+      .unwrap()
       .catch(() => {
         notify(`${t('toasts.error')}`, true, true)();
       });

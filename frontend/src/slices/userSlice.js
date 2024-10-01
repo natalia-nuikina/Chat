@@ -4,7 +4,7 @@ import routes from '../routes.js';
 
 const initialState = {
   token: '',
-  username: '123',
+  username: '',
 };
 
 const userSlice = createSlice({
@@ -14,7 +14,6 @@ const userSlice = createSlice({
     logIn: (state, action) => {
       localStorage.setItem('userId', JSON.stringify(action.payload));
       const { token, username } = action.payload;
-      console.log(action.payload.userName);
       state.token = token;
       state.username = username;
     },
