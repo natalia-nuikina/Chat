@@ -14,7 +14,6 @@ import { logIn } from '../slices/userSlice.js';
 import { useCreateUserMutation } from '../services/api.js';
 
 const SignUp = () => {
-  console.log(localStorage.getItem('userId'));
   const { t } = useTranslation();
   const notify = () => toast.error(`${t('toasts.networkErr')}`);
   const navigate = useNavigate();
@@ -43,7 +42,6 @@ const SignUp = () => {
       await createUser(values)
         .unwrap()
         .then((payload) => {
-          console.log(payload);
           dispatch(logIn(payload));
           navigate(routes.pages.chatPage());
         })

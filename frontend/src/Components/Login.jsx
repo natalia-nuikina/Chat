@@ -14,7 +14,6 @@ import { useLoginMutation } from '../services/api.js';
 import { logIn } from '../slices/userSlice.js';
 
 const PageLogin = () => {
-  console.log(localStorage.getItem('userId'));
   const { t } = useTranslation();
   const [authFailed, setAuthFailed] = useState(false);
   const location = useLocation();
@@ -32,7 +31,6 @@ const PageLogin = () => {
       await login(values)
         .unwrap()
         .then((payload) => {
-          console.log(payload);
           dispatch(logIn(payload));
           setAuthFailed(false);
           if (location.state) {
@@ -41,7 +39,6 @@ const PageLogin = () => {
           navigate(routes.pages.chatPage());
         })
         .catch((err) => {
-          console.log(err);
           if (err.status === 401) {
             setAuthFailed(true);
           } else {

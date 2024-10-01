@@ -19,7 +19,6 @@ import { logOut } from '../slices/userSlice.js';
 import { useStartChannelsQuery, useStartMessagesQuery, useAddMessageMutation } from '../services/api.js';
 
 const PageChat = ({ messagesReducer, channelsReducer }) => {
-  console.log(JSON.parse(localStorage.getItem('userId')));
   const { modalInfo } = useSelector((state) => state.modalsReducer);
   const renderModal = ({ notify }) => {
     if (!modalInfo.type) {

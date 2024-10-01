@@ -35,7 +35,6 @@ const Rename = (props) => {
     onSubmit: async (values, { resetForm }) => {
       const { id } = modalInfo.item;
       const name = filter.clean(values.name);
-      console.log(name);
       await renameChannel({ id, name })
         .unwrap()
         .then((payload) => {
