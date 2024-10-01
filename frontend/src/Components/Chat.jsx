@@ -37,13 +37,16 @@ const PageChat = ({ channelsReducer, messagesReducer, socket }) => {
   const ref = useRef(null);
   const { channelId, channels } = channelsReducer;
   const { messages, currentText } = messagesReducer;
-  console.log(channelsReducer);
   const { username } = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const [isConnected, setIsConnected] = useState(false);
-  const { data: startChannels, refetch: refetchChannels } = useStartChannelsQuery();
+  const {
+    data: startChannels, refetch: refetchChannels, isLoading: isLoadChannels,
+  } = useStartChannelsQuery();
 
-  const { data: startMessages, refetch: refetchMessages } = useStartMessagesQuery();
+  const {
+    data: startMessages, refetch: refetchMessages, isLoading: isLoadMesseges,
+  } = useStartMessagesQuery();
   const [addMessage] = useAddMessageMutation();
   const notify = (message, move, err = false) => () => {
     if (move) {
@@ -53,14 +56,17 @@ const PageChat = ({ channelsReducer, messagesReducer, socket }) => {
   };
 
   useEffect(() => {
-    if (isConnected) {
-      console.log(startChannels);
+    if (isConnected && !isLoadChannels && !isLoadMesseges) {
       refetchMessages();
       refetchChannels();
-      dispatch(addStartChannels(startChannels));
       dispatch(addStartMessages(startMessages));
+      dispatch(addStartChannels(startChannels));
     }
-  }, [isConnected, dispatch, startChannels, startMessages, refetchChannels, refetchMessages]);
+  }, [
+    isConnected,
+    refetchChannels,
+    refetchMessages,
+    isLoadChannels, isLoadMesseges, dispatch, startMessages, startChannels]);
 
   useEffect(() => {
     DispatchChanges(dispatch, setIsConnected, socket);

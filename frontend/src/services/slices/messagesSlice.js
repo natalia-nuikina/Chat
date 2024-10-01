@@ -14,7 +14,9 @@ const messagesSlice = createSlice({
       state.messages = action.payload;
     },
     addMessages: (state, action) => {
+      console.log(action);
       state.messages = [...state.messages, action.payload];
+      console.log(state.messages);
     },
     setCurrentText: (state, action) => {
       state.currentText = action.payload;
