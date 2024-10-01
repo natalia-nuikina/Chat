@@ -1,10 +1,8 @@
-import { io } from 'socket.io-client';
 import { addChannels, removeChannel, renameChannel } from './services/slices/channelsSlice.js';
 import { addMessages, removeMessages } from './services/slices/messagesSlice.js';
 
-const DispatchChanges = async (dispatch, setIsConnected) => {
-  const socket = io();
-
+const DispatchChanges = async (dispatch, setIsConnected, socket) => {
+  console.log(socket);
   const onNewMessage = (payload) => {
     dispatch(addMessages(payload));
   };

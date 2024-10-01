@@ -13,12 +13,12 @@ import { addStartChannels } from '../services/slices/channelsSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
 import DispatchChanges from '../socket.js';
-import { mapStateToProps } from './helpers.js';
+import mapStateToProps from './helpers.js';
 import { showModal } from '../services/slices/modalsSlice.js';
 import { logOut } from '../services/slices/userSlice.js';
 import { useStartChannelsQuery, useStartMessagesQuery, useAddMessageMutation } from '../services/api.js';
 
-const PageChat = ({ messagesReducer, channelsReducer }) => {
+const PageChat = ({ channelsReducer, messagesReducer, socket }) => {
   const { modalInfo } = useSelector((state) => state.modalsReducer);
   const renderModal = ({ notify }) => {
     if (!modalInfo.type) {
@@ -37,10 +37,12 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   const ref = useRef(null);
   const { channelId, channels } = channelsReducer;
   const { messages, currentText } = messagesReducer;
+  console.log(channelsReducer);
   const { username } = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const [isConnected, setIsConnected] = useState(false);
   const { data: startChannels, refetch: refetchChannels } = useStartChannelsQuery();
+
   const { data: startMessages, refetch: refetchMessages } = useStartMessagesQuery();
   const [addMessage] = useAddMessageMutation();
   const notify = (message, move, err = false) => () => {
@@ -52,6 +54,7 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
 
   useEffect(() => {
     if (isConnected) {
+      console.log(startChannels);
       refetchMessages();
       refetchChannels();
       dispatch(addStartChannels(startChannels));
@@ -60,8 +63,8 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   }, [isConnected, dispatch, startChannels, startMessages, refetchChannels, refetchMessages]);
 
   useEffect(() => {
-    DispatchChanges(dispatch, setIsConnected);
-  }, [dispatch]);
+    DispatchChanges(dispatch, setIsConnected, socket);
+  }, [dispatch, socket]);
 
   const GetActiveChannel = () => {
     const [activeChannel] = channels.filter((channel) => Number(channel.id) === Number(channelId));

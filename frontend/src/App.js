@@ -23,7 +23,7 @@ const PrivateRoute = ({ children }) => {
   );
 };
 
-const App = () => {
+const App = ({ socket }) => {
   i18n();
   return (
     <BrowserRouter>
@@ -32,7 +32,7 @@ const App = () => {
           path={routes.pages.chatPage()}
           element={(
             <PrivateRoute>
-              <PageChat />
+              <PageChat socket={socket} />
             </PrivateRoute>
           )}
         />

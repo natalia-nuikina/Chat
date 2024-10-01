@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
-import { mapStateToProps } from './helpers.js';
+import mapStateToProps from './helpers.js';
 
 const Messages = ({ channelsReducer, messagesReducer }) => {
   const messagesEndRef = useRef(null);
