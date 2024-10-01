@@ -5,7 +5,7 @@ import { Provider as StoreProvider } from 'react-redux';
 import { Provider, ErrorBoundary } from '@rollbar/react';
 
 import App from './App';
-import store from './slices/index.js';
+import store from './services/index.js';
 
 const rollbarConfig = {
   accessToken: process.env.REACT_APP_ROLLBAR_TOKEN,
