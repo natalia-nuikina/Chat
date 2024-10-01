@@ -17,7 +17,7 @@ const Rename = (props) => {
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
   const inputRef = useRef();
-  const [renameChannel] = useRenameChannelMutation();
+  const [renameChannel, result] = useRenameChannelMutation();
   useEffect(() => {
     inputRef.current.focus();
   }, []);
@@ -37,8 +37,8 @@ const Rename = (props) => {
       const name = filter.clean(values.name);
       await renameChannel({ id, name })
         .unwrap()
-        .then((payload) => {
-          if (payload && modalInfo) {
+        .then(() => {
+          if (!result.isError && modalInfo) {
             notify(`${t('toasts.rename')}`, true)();
           }
           resetForm();
