@@ -1,29 +1,29 @@
-import axios from 'axios';
 import { Button, Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-import { getAuthHeader } from '../helpers.js';
-import routes from '../../routes.js';
 import { hideModal } from '../../slices/modalsSlice.js';
+import { useDeleteChannelMutation } from '../../services/api.js';
 
 const Remove = (props) => {
   const { modalInfo } = useSelector((state) => state.modalsReducer);
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { notify } = props;
-  const headers = getAuthHeader();
+  const [deleteChannel] = useDeleteChannelMutation();
+
   const removeChannel = () => async () => {
     const { id } = modalInfo.item;
-    const response = await axios.delete(routes.channelPath(id), { headers })
+    await deleteChannel(id)
+      .unwrap()
+      .then(() => {
+        notify(`${t('toasts.remove')}`, true)();
+        dispatch(hideModal());
+      })
       .catch((err) => {
-        if (err.code === 'ERR_NETWORK') {
+        if (err.status === 'FETCH_ERROR') {
           notify(`${t('toasts.error')}`, true, true)();
         }
       });
-    if (response) {
-      notify(`${t('toasts.remove')}`, true)();
-    }
-    dispatch(hideModal());
   };
 
   return (

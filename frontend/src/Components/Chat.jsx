@@ -1,4 +1,3 @@
-// import axios from 'axios';
 import React, {
   useEffect, useRef, useState,
 } from 'react';
@@ -15,12 +14,12 @@ import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
 import DispatchChanges from '../socket.js';
 import { mapStateToProps } from './helpers.js';
-// import routes from '../routes.js';
 import { showModal } from '../slices/modalsSlice.js';
 import { logOut } from '../slices/userSlice.js';
 import { useStartChannelsQuery, useStartMessagesQuery, useAddMessageMutation } from '../services/api.js';
 
 const PageChat = ({ messagesReducer, channelsReducer }) => {
+  console.log(JSON.parse(localStorage.getItem('userId')));
   const { modalInfo } = useSelector((state) => state.modalsReducer);
   const renderModal = ({ notify }) => {
     if (!modalInfo.type) {
@@ -42,8 +41,8 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
   const { username } = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const [isConnected, setIsConnected] = useState(false);
-  const { data: startChannels } = useStartChannelsQuery();
-  const { data: startMessages, refetch } = useStartMessagesQuery();
+  const { data: startChannels, refetch: refetchChannels } = useStartChannelsQuery();
+  const { data: startMessages, refetch: refetchMessages } = useStartMessagesQuery();
   const [addMessage] = useAddMessageMutation();
   const notify = (message, move, err = false) => () => {
     if (move) {
@@ -52,30 +51,14 @@ const PageChat = ({ messagesReducer, channelsReducer }) => {
     return null;
   };
 
-  // const fetchData = useCallback(async () => {
-  //   const startChannels = await axios.get(routes.channelsPath(), { headers: getAuthHeader() })
-  //     .catch(() => {
-  //       notify(`${t('toasts.error')}`, true, true);
-  //     });
-  //   const startMessages = await axios.get(routes.messagesPath(), { headers: getAuthHeader() })
-  //     .catch(() => {
-  //       notify(`${t('toasts.error')}`, true, true);
-  //     });
-  //   if (startChannels) {
-  //     dispatch(addStartChannels(startChannels.data));
-  //   }
-  //   if (startMessages) {
-  //     dispatch(addStartMessages(startMessages.data));
-  //   }
-  // }, [dispatch, t]);
-
   useEffect(() => {
     if (isConnected) {
-      refetch();
+      refetchMessages();
+      refetchChannels();
       dispatch(addStartChannels(startChannels));
       dispatch(addStartMessages(startMessages));
     }
-  }, [isConnected, dispatch, startChannels, startMessages, refetch]);
+  }, [isConnected, dispatch, startChannels, startMessages, refetchChannels, refetchMessages]);
 
   useEffect(() => {
     DispatchChanges(dispatch, setIsConnected);

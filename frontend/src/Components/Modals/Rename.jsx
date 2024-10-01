@@ -1,14 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import axios from 'axios';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Button, Modal, Form } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
-import { getAuthHeader } from '../helpers.js';
-import routes from '../../routes.js';
 import { hideModal } from '../../slices/modalsSlice.js';
+import { useRenameChannelMutation } from '../../services/api.js';
 
 const Rename = (props) => {
   const { modalInfo } = useSelector((state) => state.modalsReducer);
@@ -19,7 +17,7 @@ const Rename = (props) => {
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
   const inputRef = useRef();
-  const headers = getAuthHeader();
+  const [renameChannel] = useRenameChannelMutation();
   useEffect(() => {
     inputRef.current.focus();
   }, []);
@@ -36,21 +34,25 @@ const Rename = (props) => {
     }),
     onSubmit: async (values, { resetForm }) => {
       const { id } = modalInfo.item;
-      const filtedData = { name: filter.clean(values.name) };
-      const response = await axios
-        .patch(routes.channelPath(id), filtedData, { headers })
+      const name = filter.clean(values.name);
+      console.log(name);
+      await renameChannel({ id, name })
+        .unwrap()
+        .then((payload) => {
+          if (payload && modalInfo) {
+            notify(`${t('toasts.rename')}`, true)();
+          }
+          resetForm();
+          dispatch(hideModal());
+        })
         .catch((err) => {
-          if (err.code === 'ERR_NETWORK') {
+          if (err.status === 'FETCH_ERROR') {
             notify(`${t('toasts.error')}`, true, true)();
           }
         });
-      if (response && modalInfo) {
-        notify(`${t('toasts.rename')}`, true)();
-      }
-      resetForm();
-      dispatch(hideModal());
     },
   });
+
   return (
     <Modal show centered>
       <Modal.Header closeButton onHide={() => dispatch(hideModal())}>

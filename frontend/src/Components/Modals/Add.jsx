@@ -1,15 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import axios from 'axios';
 import { Button, Form, Modal } from 'react-bootstrap';
 import filter from 'leo-profanity';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-import { getAuthHeader } from '../helpers.js';
-import routes from '../../routes.js';
 import { setActiveChannel } from '../../slices/channelsSlice.js';
 import { hideModal } from '../../slices/modalsSlice.js';
+import { useAddChannelMutation } from '../../services/api.js';
 
 const Add = (props) => {
   const dispatch = useDispatch();
@@ -18,7 +16,7 @@ const Add = (props) => {
   const { channels } = useSelector((state) => state.channelsReducer);
   const channelsNames = channels.map((channel) => channel.name);
   const { modalInfo } = useSelector((state) => state.modalsReducer);
-  const headers = getAuthHeader();
+  const [addChannel, result] = useAddChannelMutation();
 
   const inputRef = useRef();
   useEffect(() => {
@@ -38,19 +36,21 @@ const Add = (props) => {
     }),
     onSubmit: async (values, { resetForm }) => {
       const filtedData = { name: filter.clean(values.name) };
-      const response = await axios
-        .post(routes.channelsPath(), filtedData, { headers })
+      await addChannel(filtedData)
+        .unwrap()
+        .then((payload) => {
+          if (!result.isError && modalInfo) {
+            notify(`${t('toasts.add')}`, true)();
+            dispatch(setActiveChannel(payload.id));
+          }
+          resetForm();
+          dispatch(hideModal());
+        })
         .catch((err) => {
-          if (err.code === 'ERR_NETWORK') {
+          if (err.status === 'FETCH_ERROR') {
             notify(`${t('toasts.error')}`, true, true)();
           }
         });
-      if (response && modalInfo) {
-        notify(`${t('toasts.add')}`, true)();
-        dispatch(setActiveChannel(response.data.id));
-      }
-      resetForm();
-      dispatch(hideModal());
     },
   });
 

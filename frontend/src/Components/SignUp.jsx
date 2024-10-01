@@ -1,5 +1,4 @@
 import { useFormik } from 'formik';
-import axios from 'axios';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -12,12 +11,15 @@ import { useTranslation } from 'react-i18next';
 import logo from './img/young-woman-waving-hand-talking-bubbles-vector.jpg';
 import routes from '../routes.js';
 import { logIn } from '../slices/userSlice.js';
+import { useCreateUserMutation } from '../services/api.js';
 
 const SignUp = () => {
+  console.log(localStorage.getItem('userId'));
   const { t } = useTranslation();
   const notify = () => toast.error(`${t('toasts.networkErr')}`);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [createUser] = useCreateUserMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -38,8 +40,13 @@ const SignUp = () => {
         .oneOf([yup.ref('password'), null], `${t('errors.validation.confirmPassword')}`),
     }),
     onSubmit: async (values) => {
-      const { username, password } = values;
-      const response = await axios.post(routes.signupPath(), { username, password })
+      await createUser(values)
+        .unwrap()
+        .then((payload) => {
+          console.log(payload);
+          dispatch(logIn(payload));
+          navigate(routes.pages.chatPage());
+        })
         .catch((err) => {
           if (err.status === 409) {
             formik.errors.username = ' ';
@@ -49,10 +56,6 @@ const SignUp = () => {
             notify();
           }
         });
-      if (response) {
-        dispatch(logIn(response.data));
-        navigate(routes.pages.chatPage());
-      }
     },
   });
   return (

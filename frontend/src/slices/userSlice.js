@@ -3,8 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 import routes from '../routes.js';
 
 const initialState = {
-  token: '',
-  username: '',
+  token: (localStorage.getItem('userId')) ? JSON.parse(localStorage.getItem('userId')).token : '',
+  username: (localStorage.getItem('userId')) ? JSON.parse(localStorage.getItem('userId')).username : '',
 };
 
 const userSlice = createSlice({

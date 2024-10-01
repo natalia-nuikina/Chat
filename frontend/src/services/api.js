@@ -26,7 +26,50 @@ export const api = createApi({
         body: newMessage,
       }),
     }),
+    addChannel: builder.mutation({
+      query: (newChannel) => ({
+        method: 'POST',
+        url: routes.channelsPath(),
+        body: newChannel,
+      }),
+    }),
+    deleteChannel: builder.mutation({
+      query: (id) => ({
+        method: 'DELETE',
+        url: routes.channelPath(id),
+      }),
+    }),
+    renameChannel: builder.mutation({
+      query: ({ id, name }) => ({
+        method: 'PATCH',
+        url: routes.channelPath(id),
+        body: { name },
+      }),
+    }),
+    login: builder.mutation({
+      query: (userData) => ({
+        method: 'POST',
+        url: routes.loginPath(),
+        body: userData,
+      }),
+    }),
+    createUser: builder.mutation({
+      query: (userData) => ({
+        method: 'POST',
+        url: routes.signupPath(),
+        body: userData,
+      }),
+    }),
   }),
 });
 
-export const { useStartChannelsQuery, useStartMessagesQuery, useAddMessageMutation } = api;
+export const {
+  useStartChannelsQuery,
+  useStartMessagesQuery,
+  useAddMessageMutation,
+  useAddChannelMutation,
+  useDeleteChannelMutation,
+  useRenameChannelMutation,
+  useLoginMutation,
+  useCreateUserMutation,
+} = api;

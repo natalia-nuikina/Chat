@@ -1,6 +1,5 @@
 import { useFormik } from 'formik';
 import { useState } from 'react';
-import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Form, Button, FloatingLabel, Card,
@@ -11,15 +10,18 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
 import logo from './img/poster_event_1336266.jpg';
 import routes from '../routes.js';
+import { useLoginMutation } from '../services/api.js';
 import { logIn } from '../slices/userSlice.js';
 
 const PageLogin = () => {
+  console.log(localStorage.getItem('userId'));
   const { t } = useTranslation();
   const [authFailed, setAuthFailed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const notify = () => toast.error(`${t('toasts.networkErr')}`);
   const dispatch = useDispatch();
+  const [login] = useLoginMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -27,22 +29,25 @@ const PageLogin = () => {
       password: '',
     },
     onSubmit: async (values) => {
-      const response = await axios.post(routes.loginPath(), values)
+      await login(values)
+        .unwrap()
+        .then((payload) => {
+          console.log(payload);
+          dispatch(logIn(payload));
+          setAuthFailed(false);
+          if (location.state) {
+            navigate(location.state.from);
+          }
+          navigate(routes.pages.chatPage());
+        })
         .catch((err) => {
+          console.log(err);
           if (err.status === 401) {
             setAuthFailed(true);
           } else {
             notify();
           }
         });
-      if (response) {
-        dispatch(logIn(response.data));
-        setAuthFailed(false);
-        if (location.state) {
-          navigate(location.state.from);
-        }
-        navigate(routes.pages.chatPage());
-      }
     },
   });
   return (
