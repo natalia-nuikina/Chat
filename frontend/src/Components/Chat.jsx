@@ -1,6 +1,4 @@
-import React, {
-  useEffect, useRef, useState,
-} from 'react';
+import React, { useEffect, useRef } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { Button, InputGroup, Form } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
@@ -48,7 +46,6 @@ const PageChat = ({ channelsReducer, messagesReducer, socket }) => {
   const { messages, currentText } = messagesReducer;
   const { username } = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
-  const [isConnected, setIsConnected] = useState(false);
   const [addMessage] = useAddMessageMutation();
   const notify = (message, move, err = false) => () => {
     if (move) {
@@ -66,7 +63,6 @@ const PageChat = ({ channelsReducer, messagesReducer, socket }) => {
 
   useEffect(() => {
     const onNewMessage = (payload) => {
-      console.log(payload);
       dispatch(addMessages(payload));
     };
     const onNewChannel = (payload) => {
@@ -80,29 +76,22 @@ const PageChat = ({ channelsReducer, messagesReducer, socket }) => {
       dispatch(renameChannel(payload));
     };
 
-    setIsConnected(true);
-    console.log('onConnect');
     socket.on('newMessage', onNewMessage);
     socket.on('newChannel', onNewChannel);
     socket.on('removeChannel', onRemoveChannel);
     socket.on('renameChannel', onRenameChannel);
 
     const onDisconnect = () => {
-      console.log('onDisconnect');
       socket.off('newMessage', onNewMessage);
       socket.off('newChannel', onNewChannel);
       socket.off('removeChannel', onRemoveChannel);
       socket.off('renameChannel', onRenameChannel);
-      setIsConnected(false);
     };
-    console.log('sockety');
     socket.on('disconnect', onDisconnect);
     return () => {
       socket.off('disconnect', onDisconnect);
     };
   }, [dispatch, socket]);
-
-  console.log(isConnected);
 
   const GetActiveChannel = () => {
     const [activeChannel] = channels.filter((channel) => Number(channel.id) === Number(channelId));

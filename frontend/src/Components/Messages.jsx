@@ -17,7 +17,6 @@ const Messages = ({ channelsReducer, messagesReducer }) => {
   if (!messages) {
     return null;
   }
-  // console.log(messages);
   const messagesBox = messages
     .filter((message) => Number(message.channelId) === Number(channelId))
     .map(({ body, id, username }) => (
