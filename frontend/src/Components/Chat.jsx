@@ -20,26 +20,9 @@ import {
 } from '../services/slices/messagesSlice.js';
 
 const PageChat = ({ channelsReducer, messagesReducer, socket }) => {
-  const {
-    data: startChannels, isLoading: isLoadChannels,
-  } = useStartChannelsQuery();
-  const {
-    data: startMessages, isLoading: isLoadMesseges,
-  } = useStartMessagesQuery();
+  const { data: startChannels, isLoading: isLoadChannels } = useStartChannelsQuery();
+  const { data: startMessages, isLoading: isLoadMesseges } = useStartMessagesQuery();
   const { modalInfo } = useSelector((state) => state.modalsReducer);
-  const renderModal = ({ notify }) => {
-    if (!modalInfo.type) {
-      return null;
-    }
-
-    const Component = getModal(modalInfo.type);
-    return (
-      <Component
-        notify={notify}
-      />
-    );
-  };
-
   const { t } = useTranslation();
   const ref = useRef(null);
   const { channelId, channels } = channelsReducer;
@@ -47,6 +30,18 @@ const PageChat = ({ channelsReducer, messagesReducer, socket }) => {
   const { username } = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const [addMessage] = useAddMessageMutation();
+
+  const renderModal = ({ notify }) => {
+    if (!modalInfo.type) {
+      return null;
+    }
+    const Component = getModal(modalInfo.type);
+    return (
+      <Component
+        notify={notify}
+      />
+    );
+  };
   const notify = (message, move, err = false) => () => {
     if (move) {
       return ((err) ? toast.error(message) : toast.success(message));
@@ -81,15 +76,11 @@ const PageChat = ({ channelsReducer, messagesReducer, socket }) => {
     socket.on('removeChannel', onRemoveChannel);
     socket.on('renameChannel', onRenameChannel);
 
-    const onDisconnect = () => {
+    return () => {
       socket.off('newMessage', onNewMessage);
       socket.off('newChannel', onNewChannel);
       socket.off('removeChannel', onRemoveChannel);
       socket.off('renameChannel', onRenameChannel);
-    };
-    socket.on('disconnect', onDisconnect);
-    return () => {
-      socket.off('disconnect', onDisconnect);
     };
   }, [dispatch, socket]);
 
