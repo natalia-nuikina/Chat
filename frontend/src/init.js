@@ -6,8 +6,7 @@ import i18next from 'i18next';
 import io from 'socket.io-client';
 import { initReactI18next } from 'react-i18next';
 import resources from './locales/ru.js';
-
-import App from './App';
+import App from './App.js';
 import store from './services/index.js';
 
 const rollbarConfig = {

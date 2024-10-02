@@ -7,11 +7,9 @@ import Page404 from './Components/Page404.jsx';
 import PageLogin from './Components/Login.jsx';
 import SignUp from './Components/SignUp.jsx';
 import routes from './routes.js';
-import i18n from './i18next.js';
 
 const PrivateRoute = ({ children }) => {
   const { token } = useSelector((state) => state.userReducer);
-
   const location = useLocation();
   return (
     (token.length > 0) ? children : (
@@ -23,25 +21,22 @@ const PrivateRoute = ({ children }) => {
   );
 };
 
-const App = ({ socket }) => {
-  i18n();
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path={routes.pages.chatPage()}
-          element={(
-            <PrivateRoute>
-              <PageChat socket={socket} />
-            </PrivateRoute>
-          )}
-        />
-        <Route path={routes.pages.loginPage()} element={<PageLogin />} />
-        <Route path={routes.pages.page404()} element={<Page404 />} />
-        <Route path={routes.pages.signUpPage()} element={<SignUp />} />
-      </Routes>
-    </BrowserRouter>
-  );
-};
+const App = ({ socket }) => (
+  <BrowserRouter>
+    <Routes>
+      <Route
+        path={routes.pages.chatPage()}
+        element={(
+          <PrivateRoute>
+            <PageChat socket={socket} />
+          </PrivateRoute>
+        )}
+      />
+      <Route path={routes.pages.loginPage()} element={<PageLogin />} />
+      <Route path={routes.pages.page404()} element={<Page404 />} />
+      <Route path={routes.pages.signUpPage()} element={<SignUp />} />
+    </Routes>
+  </BrowserRouter>
+);
 
 export default App;
