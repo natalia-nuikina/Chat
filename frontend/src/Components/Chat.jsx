@@ -8,17 +8,26 @@ import { ToastContainer, toast } from 'react-toastify';
 import filter from 'leo-profanity';
 import getModal from './Modals/index.js';
 import 'react-toastify/dist/ReactToastify.css';
-import { addStartMessages, setCurrentText } from '../services/slices/messagesSlice.js';
-import { addStartChannels } from '../services/slices/channelsSlice.js';
 import Channels from './Channels.jsx';
 import Messages from './Messages.jsx';
-import DispatchChanges from '../socket.js';
 import mapStateToProps from './helpers.js';
 import { showModal } from '../services/slices/modalsSlice.js';
 import { logOut } from '../services/slices/userSlice.js';
-import { useStartChannelsQuery, useStartMessagesQuery, useAddMessageMutation } from '../services/api.js';
+import { useAddMessageMutation, useStartChannelsQuery, useStartMessagesQuery } from '../services/api.js';
+import {
+  addChannels, removeChannel, renameChannel, addStartChannels,
+} from '../services/slices/channelsSlice.js';
+import {
+  addMessages, removeMessages, setCurrentText, addStartMessages,
+} from '../services/slices/messagesSlice.js';
 
 const PageChat = ({ channelsReducer, messagesReducer, socket }) => {
+  const {
+    data: startChannels, isLoading: isLoadChannels,
+  } = useStartChannelsQuery();
+  const {
+    data: startMessages, isLoading: isLoadMesseges,
+  } = useStartMessagesQuery();
   const { modalInfo } = useSelector((state) => state.modalsReducer);
   const renderModal = ({ notify }) => {
     if (!modalInfo.type) {
@@ -40,13 +49,6 @@ const PageChat = ({ channelsReducer, messagesReducer, socket }) => {
   const { username } = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const [isConnected, setIsConnected] = useState(false);
-  const {
-    data: startChannels, refetch: refetchChannels, isLoading: isLoadChannels,
-  } = useStartChannelsQuery();
-
-  const {
-    data: startMessages, refetch: refetchMessages, isLoading: isLoadMesseges,
-  } = useStartMessagesQuery();
   const [addMessage] = useAddMessageMutation();
   const notify = (message, move, err = false) => () => {
     if (move) {
@@ -56,21 +58,51 @@ const PageChat = ({ channelsReducer, messagesReducer, socket }) => {
   };
 
   useEffect(() => {
-    if (isConnected && !isLoadChannels && !isLoadMesseges) {
-      refetchMessages();
-      refetchChannels();
+    if (!isLoadChannels && !isLoadMesseges) {
       dispatch(addStartMessages(startMessages));
       dispatch(addStartChannels(startChannels));
     }
-  }, [
-    isConnected,
-    refetchChannels,
-    refetchMessages,
-    isLoadChannels, isLoadMesseges, dispatch, startMessages, startChannels]);
+  }, [dispatch, startChannels, startMessages, isLoadChannels, isLoadMesseges]);
 
   useEffect(() => {
-    DispatchChanges(dispatch, setIsConnected, socket);
+    const onNewMessage = (payload) => {
+      console.log(payload);
+      dispatch(addMessages(payload));
+    };
+    const onNewChannel = (payload) => {
+      dispatch(addChannels(payload));
+    };
+    const onRemoveChannel = (payload) => {
+      dispatch(removeChannel(payload));
+      dispatch(removeMessages(payload));
+    };
+    const onRenameChannel = (payload) => {
+      dispatch(renameChannel(payload));
+    };
+
+    setIsConnected(true);
+    console.log('onConnect');
+    socket.on('newMessage', onNewMessage);
+    socket.on('newChannel', onNewChannel);
+    socket.on('removeChannel', onRemoveChannel);
+    socket.on('renameChannel', onRenameChannel);
+
+    const onDisconnect = () => {
+      console.log('onDisconnect');
+      socket.off('newMessage', onNewMessage);
+      socket.off('newChannel', onNewChannel);
+      socket.off('removeChannel', onRemoveChannel);
+      socket.off('renameChannel', onRenameChannel);
+      setIsConnected(false);
+    };
+    console.log('sockety');
+    socket.on('disconnect', onDisconnect);
+    return () => {
+      socket.off('disconnect', onDisconnect);
+    };
   }, [dispatch, socket]);
+
+  console.log(isConnected);
 
   const GetActiveChannel = () => {
     const [activeChannel] = channels.filter((channel) => Number(channel.id) === Number(channelId));

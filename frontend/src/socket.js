@@ -2,7 +2,6 @@ import { addChannels, removeChannel, renameChannel } from './services/slices/cha
 import { addMessages, removeMessages } from './services/slices/messagesSlice.js';
 
 const DispatchChanges = async (dispatch, setIsConnected, socket) => {
-  console.log(socket);
   const onNewMessage = (payload) => {
     dispatch(addMessages(payload));
   };
